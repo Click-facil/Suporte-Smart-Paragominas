@@ -50,7 +50,7 @@ class AdminView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
 
-# Cria a instância do Admin
+# Cria a instância do Admin, que usará a URL padrão /admin
 admin = Admin(app, name='Suporte Smart Admin', template_mode='bootstrap3')
 
 
@@ -93,6 +93,8 @@ class ProductImage(db.Model):
 # Adiciona as "views" para cada modelo que você quer gerenciar no Flask-Admin
 admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Product, db.session))
+admin.add_view(AdminView(Category, db.session))
+admin.add_view(AdminView(ProductImage, db.session, name='Imagens de Produtos'))
 
 
 # --- PROCESSADOR DE CONTEXTO ---
@@ -299,14 +301,14 @@ def remove_from_cart(product_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('admin.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('admin_dashboard'))
+            return redirect(next_page) if next_page else redirect(url_for('admin.index'))
         else:
             flash('Login falhou. Verifique o utilizador e a senha.', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -315,141 +317,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-# --- ROTAS DO PAINEL ADMINISTRATIVO ---
-@app.route('/admin')
-@login_required
-def admin_dashboard():
-    products = Product.query.order_by(Product.id.desc()).all()
-    return render_template('admin_dashboard.html', products=products, title="Painel de Produtos")
-
-# ROTA ADICIONAR PRODUTO
-@app.route('/admin/produto/adicionar', methods=['GET', 'POST'])
-@login_required
-def add_product():
-    form = ProductForm()
-    form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
-    if form.validate_on_submit():
-        new_product = Product(
-            name=form.name.data,
-            description=form.description.data,
-            price=form.price.data,
-            promo_price=form.promo_price.data if form.promo_price.data else None,
-            is_featured=form.is_featured.data,
-            category_id=form.category.data
-        )
-        if form.picture.data:
-            new_product.image_file = save_picture(form.picture.data)
-        
-        db.session.add(new_product)
-        db.session.commit()
-        flash('Produto adicionado! Agora pode adicionar mais imagens na galeria.', 'success')
-        return redirect(url_for('manage_gallery', product_id=new_product.id))
-    return render_template('add_edit_product.html', title='Adicionar Novo Produto', form=form)
-
-# ROTA EDITAR PRODUTO
-@app.route('/admin/produto/editar/<int:product_id>', methods=['GET', 'POST'])
-@login_required
-def edit_product(product_id):
-    product = db.get_or_404(Product, product_id)
-    form = ProductForm(obj=product)
-    form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
-    if form.validate_on_submit():
-        old_image = product.image_file
-        if form.picture.data:
-            delete_picture(old_image)
-            product.image_file = save_picture(form.picture.data)
-        product.name = form.name.data
-        product.description = form.description.data
-        product.price = form.price.data
-        product.promo_price = form.promo_price.data if form.promo_price.data else None
-        product.is_featured = form.is_featured.data
-        product.category_id = form.category.data
-        db.session.commit()
-        flash('Produto atualizado com sucesso!', 'success')
-        return redirect(url_for('admin_dashboard'))
-    
-    image_file = url_for('static', filename='product_pics/' + product.image_file)
-    return render_template('add_edit_product.html', title='Editar Produto', form=form, product=product, image_file=image_file)
-
-# ROTA APAGAR PRODUTO
-@app.route('/admin/produto/apagar/<int:product_id>', methods=['POST'])
-@login_required
-def delete_product(product_id):
-    product = db.get_or_404(Product, product_id)
-    
-    # Apagar imagem principal do sistema de arquivos
-    delete_picture(product.image_file)
-    
-    # Apagar imagens da galeria do sistema de arquivos
-    for image in product.images:
-        delete_picture(image.image_filename)
-        
-    db.session.delete(product)
-    db.session.commit()
-    flash('Produto e todas as suas imagens foram apagados!', 'danger')
-    return redirect(url_for('admin_dashboard'))
-
-# NOVA ROTA: GERIR GALERIA DE IMAGENS
-@app.route('/admin/produto/galeria/<int:product_id>', methods=['GET', 'POST'])
-@login_required
-def manage_gallery(product_id):
-    product = db.get_or_404(Product, product_id)
-    form = ImageUploadForm()
-    if form.validate_on_submit():
-        for pic in form.pictures.data:
-            filename = save_picture(pic)
-            new_image = ProductImage(image_filename=filename, product_id=product.id)
-            db.session.add(new_image)
-        db.session.commit()
-        flash('Imagens adicionadas à galeria com sucesso!', 'success')
-        return redirect(url_for('manage_gallery', product_id=product.id))
-    
-    return render_template('manage_gallery.html', title='Gerir Galeria', product=product, form=form)
-
-# NOVA ROTA: APAGAR IMAGEM DA GALERIA
-@app.route('/admin/imagem/apagar/<int:image_id>', methods=['POST'])
-@login_required
-def delete_image(image_id):
-    image = db.get_or_404(ProductImage, image_id)
-    product_id = image.product_id
-    # Apagar o arquivo físico da imagem
-    delete_picture(image.image_filename)
-    
-    db.session.delete(image)
-    db.session.commit()
-    flash('Imagem apagada da galeria.', 'danger')
-    return redirect(url_for('manage_gallery', product_id=product_id))
-
-# ROTAS DE CATEGORIA
-@app.route('/admin/categorias', methods=['GET', 'POST'])
-@login_required
-def admin_categories():
-    form = CategoryForm()
-    if form.validate_on_submit():
-        new_category = Category(name=form.name.data)
-        db.session.add(new_category)
-        db.session.commit()
-        flash('Categoria adicionada com sucesso!', 'success')
-        return redirect(url_for('admin_categories'))
-    
-    categories = Category.query.order_by(Category.name).all()
-    return render_template('admin_categories.html', title='Gerir Categorias', form=form, categories=categories)
-
-@app.route('/admin/categoria/apagar/<int:category_id>', methods=['POST'])
-@login_required
-def delete_category(category_id):
-    category = db.get_or_404(Category, category_id)
-    product_count = len(category.products)
-    if product_count > 0:
-        flash(f'Não pode apagar "{category.name}", pois ela contém {product_count} produto(s). Mova-os para outra categoria primeiro.', 'warning')
-        return redirect(url_for('admin_categories'))
-        
-    db.session.delete(category)
-    db.session.commit()
-    flash(f'Categoria "{category.name}" apagada com sucesso!', 'danger')
-    return redirect(url_for('admin_categories'))
 
 
 if __name__ == '__main__':
