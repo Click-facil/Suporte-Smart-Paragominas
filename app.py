@@ -47,11 +47,31 @@ login_manager.login_message = 'Por favor, faça login para aceder a esta página
 # --- CONFIGURAÇÃO DO FLASK-ADMIN ---
 # Classe de view customizada para proteger com login
 class AdminView(ModelView):
+    # Esconde a coluna de senha na lista de usuários
+    column_exclude_list = ['password']
+
     def is_accessible(self):
         return current_user.is_authenticated
 
+# View customizada para Produtos, para apagar os arquivos de imagem associados
+class ProductAdminView(AdminView):
+    def on_model_delete(self, model):
+        # Apaga a imagem principal
+        delete_picture(model.image_file)
+        # Apaga todas as imagens da galeria (o cascade no DB já apaga os registros)
+        for image in model.images:
+            delete_picture(image.image_filename)
+
+# View customizada para Imagens de Produto, para apagar o arquivo de imagem
+class ProductImageAdminView(AdminView):
+    def on_model_delete(self, model):
+        delete_picture(model.image_filename)
+
 # Cria a instância do Admin, que usará a URL padrão /admin
 admin = Admin(app, name='Suporte Smart Admin', template_mode='bootstrap3')
+
+
+
 
 
 
@@ -91,10 +111,10 @@ class ProductImage(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
 
 # Adiciona as "views" para cada modelo que você quer gerenciar no Flask-Admin
-admin.add_view(AdminView(User, db.session))
-admin.add_view(AdminView(Product, db.session))
-admin.add_view(AdminView(Category, db.session))
-admin.add_view(AdminView(ProductImage, db.session, name='Imagens de Produtos'))
+admin.add_view(AdminView(User, db.session, name='Utilizadores'))
+admin.add_view(ProductAdminView(Product, db.session))
+admin.add_view(AdminView(Category, db.session, name='Categorias'))
+admin.add_view(ProductImageAdminView(ProductImage, db.session, name='Imagens de Produtos'))
 
 
 # --- PROCESSADOR DE CONTEXTO ---
