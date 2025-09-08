@@ -21,16 +21,14 @@ app = Flask(__name__)
 # Usa variáveis de ambiente para segurança e flexibilidade
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'uma-chave-secreta-padrao-para-desenvolvimento')
 
-# Pega a URL do banco de dados do ambiente
-database_url = os.environ.get('DATABASE_URL')
+# Pega a URL do banco de dados do ambiente, com um fallback para o SQLite local
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///suportesmart.db')
 
-# Se a variável de ambiente DATABASE_URL existir (estamos no Render)...
-if database_url:
-    # ...substitui 'postgres://' por 'postgresql://' (necessário para o SQLAlchemy)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace("postgres://", "postgresql://", 1)
-else:
-    # ...senão (estamos na máquina local), usa o banco de dados SQLite
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suportesmart.db'
+# Garante que a URL do PostgreSQL seja compatível com o SQLAlchemy, pois alguns serviços usam "postgres://"
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Aumenta o tamanho máximo de upload para permitir várias imagens
