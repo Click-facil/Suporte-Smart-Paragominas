@@ -213,6 +213,10 @@ def sitemap():
 def robots():
     return render_template('robots.txt')
 
+# ROTA DE TESTE PARA DEBUG NO RENDER
+@app.route('/teste-debug-123')
+def debug_route():
+    return "<h1>Funciona! O novo codigo esta no ar.</h1>"
 
 # --- ROTAS DO CARRINHO DE COMPRAS ---
 @app.route('/carrinho/adicionar/<int:product_id>', methods=['POST'])
