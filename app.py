@@ -19,9 +19,19 @@ app = Flask(__name__)
 
 # --- CONFIGURAÇÃO ---
 # Usa variáveis de ambiente para segurança e flexibilidade
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-# Usa a DATABASE_URL do ambiente ou um fallback para o banco de dados local
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///suportesmart.db')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'uma-chave-secreta-padrao-para-desenvolvimento')
+
+# Pega a URL do banco de dados do ambiente
+database_url = os.environ.get('DATABASE_URL')
+
+# Se a variável de ambiente DATABASE_URL existir (estamos no Render)...
+if database_url:
+    # ...substitui 'postgres://' por 'postgresql://' (necessário para o SQLAlchemy)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace("postgres://", "postgresql://", 1)
+else:
+    # ...senão (estamos na máquina local), usa o banco de dados SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suportesmart.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Aumenta o tamanho máximo de upload para permitir várias imagens
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB
@@ -415,12 +425,14 @@ def admin_categories():
 @login_required
 def delete_category(category_id):
     category = db.get_or_404(Category, category_id)
-    if category.products:
-        flash('Não pode apagar uma categoria que contém produtos.', 'warning')
+    product_count = len(category.products)
+    if product_count > 0:
+        flash(f'Não pode apagar "{category.name}", pois ela contém {product_count} produto(s). Mova-os para outra categoria primeiro.', 'warning')
         return redirect(url_for('admin_categories'))
+        
     db.session.delete(category)
     db.session.commit()
-    flash('Categoria apagada com sucesso!', 'danger')
+    flash(f'Categoria "{category.name}" apagada com sucesso!', 'danger')
     return redirect(url_for('admin_categories'))
 
 
