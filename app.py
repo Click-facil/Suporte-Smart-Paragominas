@@ -1,5 +1,6 @@
 import os
 import secrets
+from dotenv import load_dotenv
 from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from datetime import datetime, timedelta
@@ -12,11 +13,15 @@ from wtforms.validators import DataRequired, Length, ValidationError, Optional
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 
+load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
+
 app = Flask(__name__)
 
 # --- CONFIGURAÇÃO ---
-app.config['SECRET_KEY'] = 'f9bf78b9a18ce6d46a0cd2b0b86df9da'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suportesmart.db'
+# Usa variáveis de ambiente para segurança e flexibilidade
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# Usa a DATABASE_URL do ambiente ou um fallback para o banco de dados local
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///suportesmart.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Aumenta o tamanho máximo de upload para permitir várias imagens
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB
@@ -48,8 +53,8 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True) # Alterado para Text para descrições mais longas
-    price = db.Column(db.Float, nullable=False)
-    promo_price = db.Column(db.Float, nullable=True)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    promo_price = db.Column(db.Numeric(10, 2), nullable=True)
     # Esta será a imagem principal/de capa
     image_file = db.Column(db.String(100), nullable=False, default='placeholder.png')
     is_featured = db.Column(db.Boolean, nullable=False, default=False)
@@ -121,6 +126,18 @@ def save_picture(form_picture):
     i.thumbnail(output_size)
     i.save(picture_path)
     return picture_fn
+
+def delete_picture(filename):
+    """Apaga um arquivo de imagem da pasta static/product_pics."""
+    # Não apagar a imagem padrão
+    if filename and filename != 'placeholder.png':
+        try:
+            picture_path = os.path.join(app.root_path, 'static/product_pics', filename)
+            if os.path.exists(picture_path):
+                os.remove(picture_path)
+        except Exception as e:
+            # Em um app de produção, seria bom logar este erro
+            print(f"Erro ao apagar a imagem {filename}: {e}")
 
 
 # --- ROTAS DO SITE PÚBLICO ---
@@ -291,8 +308,8 @@ def add_product():
         new_product = Product(
             name=form.name.data,
             description=form.description.data,
-            price=float(form.price.data),
-            promo_price=float(form.promo_price.data) if form.promo_price.data else None,
+            price=form.price.data,
+            promo_price=form.promo_price.data if form.promo_price.data else None,
             is_featured=form.is_featured.data,
             category_id=form.category.data
         )
@@ -313,12 +330,14 @@ def edit_product(product_id):
     form = ProductForm(obj=product)
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
     if form.validate_on_submit():
+        old_image = product.image_file
         if form.picture.data:
+            delete_picture(old_image)
             product.image_file = save_picture(form.picture.data)
         product.name = form.name.data
         product.description = form.description.data
-        product.price = float(form.price.data)
-        product.promo_price = float(form.promo_price.data) if form.promo_price.data else None
+        product.price = form.price.data
+        product.promo_price = form.promo_price.data if form.promo_price.data else None
         product.is_featured = form.is_featured.data
         product.category_id = form.category.data
         db.session.commit()
@@ -333,6 +352,14 @@ def edit_product(product_id):
 @login_required
 def delete_product(product_id):
     product = db.get_or_404(Product, product_id)
+    
+    # Apagar imagem principal do sistema de arquivos
+    delete_picture(product.image_file)
+    
+    # Apagar imagens da galeria do sistema de arquivos
+    for image in product.images:
+        delete_picture(image.image_filename)
+        
     db.session.delete(product)
     db.session.commit()
     flash('Produto e todas as suas imagens foram apagados!', 'danger')
@@ -361,6 +388,9 @@ def manage_gallery(product_id):
 def delete_image(image_id):
     image = db.get_or_404(ProductImage, image_id)
     product_id = image.product_id
+    # Apagar o arquivo físico da imagem
+    delete_picture(image.image_filename)
+    
     db.session.delete(image)
     db.session.commit()
     flash('Imagem apagada da galeria.', 'danger')
