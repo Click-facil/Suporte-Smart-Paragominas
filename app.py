@@ -12,6 +12,8 @@ from wtforms import StringField, TextAreaField, DecimalField, SubmitField, Passw
 from wtforms.validators import DataRequired, Length, ValidationError, Optional
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
@@ -40,6 +42,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 login_manager.login_message = 'Por favor, faça login para aceder a esta página.'
+
+
+# --- CONFIGURAÇÃO DO FLASK-ADMIN ---
+# Classe de view customizada para proteger com login
+class AdminView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+# Cria a instância do Admin
+admin = Admin(app, name='Suporte Smart Admin', template_mode='bootstrap3')
+
+
 
 
 # --- MODELOS DO BANCO DE DADOS ---
@@ -75,6 +89,10 @@ class ProductImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_filename = db.Column(db.String(100), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+
+# Adiciona as "views" para cada modelo que você quer gerenciar no Flask-Admin
+admin.add_view(AdminView(User, db.session))
+admin.add_view(AdminView(Product, db.session))
 
 
 # --- PROCESSADOR DE CONTEXTO ---
