@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Seu Carrinho de Compras
+{% endblock %}
+
+{% block seo_tags %}
+    <meta name="description" content="Revise seu carrinho de compras na Suporte Smart. Finalize seu pedido de celulares e acessórios em Paragominas.">
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-extrabold text-slate-800 mb-8">Seu Carrinho de Compras</h1>
+
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'danger' else 'bg-yellow-100 text-yellow-800' if category == 'warning' else 'bg-blue-100 text-blue-800' }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if cart %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Itens do Carrinho -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+            <ul class="divide-y divide-gray-200">
+                {% for product_id, item in cart.items() %}
+                <li class="py-4 flex items-center cart-item" data-name="{{ item.name }}" data-quantity="{{ item.quantity }}">
+                    <img src="{{ url_for('static', filename='product_pics/' ~ item.image) }}" alt="Produto {{ item.name }} no carrinho" class="w-24 h-24 object-cover rounded-md mr-4">
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-slate-800">{{ item.name }}</h3>
+                        <p class="text-slate-500">R$ {{ "%.2f"|format(item.price)|replace('.', ',') }}</p>
+                        
+                        <!-- Formulário de atualização de quantidade -->
+                        <form action="{{ url_for('update_cart_item', product_id=product_id) }}" method="POST" class="flex items-center mt-2">
+                            <label for="quantity-{{ product_id }}" class="text-sm mr-2">Qtd:</label>
+                            <input type="number" id="quantity-{{ product_id }}" name="quantity" value="{{ item.quantity }}" min="1" class="w-16 px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            <button type="submit" class="ml-2 text-xs text-blue-600 hover:underline">Atualizar</button>
+                        </form>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-slate-800">R$ {{ "%.2f"|format(item.price * item.quantity)|replace('.', ',') }}</p>
+                        <!-- Formulário para remover item -->
+                        <form action="{{ url_for('remove_from_cart', product_id=product_id) }}" method="POST" class="mt-2">
+                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold">Remover</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Resumo do Pedido -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                <h2 class="text-xl font-bold text-slate-800 border-b pb-4 mb-4">Resumo do Pedido</h2>
+                <div class="flex justify-between mb-2 text-slate-600">
+                    <span>Subtotal</span>
+                    <span id="cart-total">R$ {{ "%.2f"|format(total_price)|replace('.', ',') }}</span>
+                </div>
+                <div class="flex justify-between mb-4 text-slate-600">
+                    <span>Frete</span>
+                    <span>A combinar</span>
+                </div>
+                <div class="flex justify-between font-bold text-xl text-slate-800 border-t pt-4 mt-4">
+                    <span>Total</span>
+                    <span>R$ {{ "%.2f"|format(total_price)|replace('.', ',') }}</span>
+                </div>
+                <button onclick="finalizarCompraWhatsApp()" class="mt-6 w-full bg-whatsapp text-white font-bold py-3 rounded-lg text-lg hover:bg-whatsapp-dark transition duration-300 flex items-center justify-center">
+                    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19.05 4.94A9.96 9.96 0 0 0 12 2C6.48 2 2 6.48 2 12c0 1.77.46 3.45 1.27 4.94L2 22l5.06-1.27a9.92 9.92 0 0 0 4.94 1.27h.01c5.52 0 10-4.48 10-10a9.95 9.95 0 0 0-2.95-7.06zM12 20.01c-1.63 0-3.18-.48-4.5-1.35L3.5 19.5l.86-3.95A8.01 8.01 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8 8.01zm4.37-6.53c-.23-.11-1.36-.67-1.57-.75-.21-.08-.36-.11-.52.11-.16.23-.59.75-.73.9-.13.16-.26.18-.49.06-.23-.12-1-.36-1.9-1.18-.71-.63-1.18-1.41-1.32-1.64-.13-.23-.01-.36.1-.47.1-.11.23-.26.34-.39.12-.13.16-.23.24-.39.08-.16.04-.3-.02-.41-.06-.11-.52-1.25-.71-1.7-.19-.45-.38-.39-.52-.39h-.47c-.16 0-.36.04-.52.18-.16.14-.59.58-.59 1.42 0 .84.61 1.65.69 1.77.08.12 1.39 2.12 3.36 2.96.49.21.87.33 1.18.42.46.13.87.12 1.2.07.38-.05 1.36-.55 1.55-1.08.19-.53.19-1 .13-1.08-.05-.08-.16-.13-.34-.24z"/>
+                    </svg>
+                    Finalizar no WhatsApp
+                </button>
+                <a href="{{ url_for('loja') }}" class="block text-center mt-4 text-primary hover:underline">Continuar comprando</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-20 bg-white rounded-lg shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h2 class="mt-4 text-2xl font-semibold text-slate-700">Seu carrinho está vazio</h2>
+        <p class="mt-2 text-slate-500">Adicione produtos para vê-los aqui.</p>
+        <a href="{{ url_for('loja') }}" class="mt-6 inline-block bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">
+            Explorar Produtos
+        </a>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

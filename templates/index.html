@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Celulares e Acessórios em Paragominas
+{% endblock %}
+
+{% block content %}
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- SEÇÃO HERO (BANNER PRINCIPAL) -->
+    <section id="inicio" class="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-8 md:p-16 text-white text-center md:text-left flex flex-col md:flex-row items-center justify-between mb-16 md:mb-20 animate-on-scroll scroll-target">
+        <div class="md:w-1/2 mb-8 md:mb-0">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">A tecnologia que você precisa, na palma da sua mão.</h1>
+            <p class="text-lg text-light/80 mb-8">O universo do seu celular está aqui. De smartphones e smartwatches a todos os acessórios essenciais em Paragominas.</p>
+            <a href="#loja" class="bg-white text-primary-dark font-bold py-3 px-8 rounded-lg text-lg hover:bg-slate-100 transition duration-300">Ver Produtos</a>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+            <img src="static/product_pics/98348b37bd071d33.jpeg" alt="Smartphone e acessórios em destaque na Suporte Smart Paragominas" class="rounded-lg transform md:rotate-6 transition duration-500 hover:rotate-0 hover:scale-105">
+        </div>
+    </section>
+
+    <!-- SEÇÃO CATEGORIAS (DINÂMICA) -->
+    <section id="categorias" class="mb-16 md:mb-20 scroll-target">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-10 animate-on-scroll">Navegue por Categorias</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8">
+            {% for category in all_categories %}
+            <a href="{{ url_for('category_page', category_id=category.id) }}" class="bg-white p-6 rounded-lg card-shadow text-center flex flex-col items-center justify-center animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
+                <img src="https://placehold.co/100x100/E6F0F6/014a81?text={{ category.name|replace(' ', '+') }}" class="mx-auto mb-4 rounded-full" alt="Categoria {{ category.name }} na Suporte Smart">
+                <h3 class="text-lg font-semibold text-slate-800">{{ category.name }}</h3>
+            </a>
+            {% else %}
+            <p class="col-span-full text-center text-slate-500">Nenhuma categoria cadastrada.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- SEÇÃO PRODUTOS EM DESTAQUE -->
+    <section id="loja" class="mb-16 md:mb-20 scroll-target">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-10 animate-on-scroll">Produtos em Destaque</h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div class="bg-white rounded-lg overflow-hidden card-shadow flex flex-col group animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
+                <div class="relative overflow-hidden">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                        <img src="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png')) }}" alt="{{ product.name }} - Suporte Smart Paragominas" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                    </a>
+                    {% if product.promo_price %}
+                    <div class="absolute top-3 right-3 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">PROMO</div>
+                    {% endif %}
+                </div>
+                
+                <div class="p-5 flex flex-col flex-grow">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2 hover:text-primary transition-colors truncate">{{ product.name }}</h3>
+                    </a>
+                    <p class="text-slate-500 text-sm mb-4">{{ product.category.name }}</p>
+                    
+                    <div class="mt-auto space-y-3">
+                        <div class="flex items-baseline">
+                            {% if product.promo_price %}
+                                <span class="text-2xl font-bold text-primary mr-2">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</span>
+                                <span class="text-md text-slate-400 line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
+                            {% else %}
+                                <span class="text-2xl font-bold text-slate-800 mr-2">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
+                            {% endif %}
+                        </div>
+                        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition duration-300">
+                                Adicionar ao Carrinho
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <p class="col-span-full text-center text-slate-500">Nenhum produto em destaque no momento.</p>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-12 animate-on-scroll">
+            <a href="{{ url_for('loja') }}" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">
+                Ver todos os produtos
+            </a>
+        </div>
+    </section>
+
+    <!-- SEÇÃO SOBRE NÓS -->
+    <section id="sobre" class="bg-white rounded-lg border border-slate-200/80 p-8 md:p-12 flex flex-col md:flex-row items-center gap-12 mb-16 md:mb-20 animate-on-scroll scroll-target">
+        <div class="md:w-1/2">
+            <img src="static/images/logo.png" alt="Foto da loja Suporte Smart Paragominas" class="rounded-lg shadow-lg w-full">
+        </div>
+        <div class="md:w-1/2">
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">Sua loja de confiança em Paragominas</h2>
+            <p class="text-slate-600 mb-4">
+                A Suporte Smart é mais do que uma loja de celulares. Somos uma franquia dedicada a oferecer os melhores produtos e o suporte técnico mais qualificado da região. Nossa missão em Paragominas é conectar você com a tecnologia de ponta, oferecendo um atendimento personalizado e a garantia que você merece.
+            </p>
+            <p class="text-slate-600">
+                Venha nos conhecer e descubra por que somos a escolha número um para quem busca qualidade, variedade e confiança.
+            </p>
+        </div>
+    </section>
+
+    <!-- SEÇÃO PERGUNTAS FREQUENTES (FAQ) -->
+    <section id="faq" class="max-w-3xl mx-auto animate-on-scroll scroll-target">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-10">Perguntas Frequentes</h2>
+        <div class="space-y-4">
+            <!-- Pergunta 1 -->
+            <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
+                <summary class="font-semibold text-lg text-slate-800">Quais formas de pagamento vocês aceitam?</summary>
+                <p class="text-slate-600 mt-4">
+                    Atualmente, as vendas são finalizadas via WhatsApp. Aceitamos PIX, cartões de débito e crédito. Entre em contato para mais detalhes.
+                </p>
+            </details>
+            <!-- Pergunta 2 -->
+            <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
+                <summary class="font-semibold text-lg text-slate-800">Os produtos tem garantia?</summary>
+                <p class="text-slate-600 mt-4">
+                    Sim! Todos os nossos produtos possuem garantia de fábrica. Consulte os prazos específicos para cada produto.
+                </p>
+            </details>
+            <!-- Pergunta 3 -->
+            <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
+                <summary class="font-semibold text-lg text-slate-800">Como funciona a retirada?</summary>
+                <p class="text-slate-600 mt-4">
+                    Você pode retirar seu produto diretamente em nossa loja física em Paragominas. A confirmação é feita diretamente pelo WhatsApp após a compra.
+                </p>
+            </details>
+            <!-- Pergunta 4 -->
+            <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
+                <summary class="font-semibold text-lg text-slate-800">Como funciona o boleto para negativado?</summary>
+                <p class="text-slate-600 mt-4">
+                    O processo envolve uma análise de crédito simplificada e, se aprovado, você pode parcelar o valor do aparelho em até 18 boletos mensais.
+                </p>
+            </details>
+        </div>
+    </section>
+</main>
+{% endblock %}

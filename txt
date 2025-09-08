@@ -1,0 +1,35 @@
+app.config['SECRET_KEY'] = 'f9bf78b9a18ce6d46a0cd2b0b86df9da'
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+venv\Scripts\activate
+
+Flask Shell :
+
+# Cole ou digite esta linha e pressione Enter
+from app import db, User, bcrypt
+
+# Depois esta e pressione Enter
+db.create_all()
+
+# E assim por diante...
+hashed_password = bcrypt.generate_password_hash('sua_senha_forte_aqui').decode('utf-8')
+user = User(username='admin', password=hashed_password)
+db.session.add(user)
+db.session.commit()
+
+# Para verificar, execute esta linha
+User.query.all() 
+
+Resumo do Novo Fluxo de Trabalho
+A partir de agora, seu dia a dia será:
+
+Abra o projeto no VS Code.
+
+Abra um terminal e rode npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch. Deixe ele rodando.
+
+Trabalhe normalmente nos seus arquivos .html na pasta templates, adicionando e removendo classes do Tailwind.
+
+Cada vez que você salvar, o output.css será atualizado nos bastidores.
+
+Recarregue a página no seu navegador para ver as mudanças.

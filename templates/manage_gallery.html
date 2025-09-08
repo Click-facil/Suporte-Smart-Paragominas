@@ -1,0 +1,62 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex items-center mb-8">
+        <a href="{{ url_for('admin_dashboard') }}" class="text-primary hover:text-primary-dark font-semibold mr-4">← Voltar para Produtos</a>
+        <h2 class="text-3xl font-bold text-slate-800">Gerir Galeria: <span class="font-medium">{{ product.name }}</span></h2>
+    </div>
+
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'danger' else 'bg-blue-100 text-blue-800' }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Formulário de Upload -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg mb-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novas Imagens</h3>
+        <p class="text-sm text-gray-500 mb-4">Pode selecionar várias imagens de uma vez.</p>
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="flex items-center space-x-4">
+                <div class="flex-grow">
+                    {{ form.pictures.label(class="sr-only") }}
+                    {{ form.pictures(class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary-dark hover:file:bg-primary/20") }}
+                </div>
+                {{ form.submit(class="bg-primary text-white font-bold py-2 px-5 rounded-lg hover:bg-primary-dark transition cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Galeria de Imagens Existentes -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Imagens Atuais na Galeria</h3>
+        {% if product.images %}
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {% for image in product.images %}
+                <div class="relative group">
+                    <img src="{{ url_for('static', filename='product_pics/' + image.image_filename) }}" class="w-full h-32 object-cover rounded-lg">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                        <form action="{{ url_for('delete_image', image_id=image.id) }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja apagar esta imagem?');">
+                            <button type="submit" class="text-white bg-red-600 hover:bg-red-700 rounded-full p-2">
+                                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">Nenhuma imagem adicional na galeria deste produto.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

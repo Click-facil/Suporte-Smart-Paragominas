@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Suporte Smart Paragominas{% endblock %} - Celulares e Acessórios</title>
+
+    {% block seo_tags %}
+    <meta name="description" content="Sua loja completa de celulares, smartwatches, capas, películas e acessórios em Paragominas. Encontre tudo para o seu smartphone na Suporte Smart!">
+    <link rel="canonical" href="{{ request.url_root.rstrip('/') }}{{ request.path }}">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="Suporte Smart Paragominas - Celulares e Acessórios">
+    <meta property="og:description" content="Sua loja completa de celulares, smartwatches, capas, películas e acessórios em Paragominas.">
+    <meta property="og:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}">
+    <meta property="og:site_name" content="Suporte Smart Paragominas">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="Suporte Smart Paragominas - Celulares e Acessórios">
+    <meta property="twitter:description" content="Sua loja completa de celulares, smartwatches, capas, películas e acessórios em Paragominas.">
+    <meta property="twitter:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}">
+    {% endblock %}
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuração da paleta de cores personalizada para o Tailwind CSS
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'primary': '#015da2',      // Seu azul principal
+                'primary-dark': '#014a81', // Tom mais escuro para hovers
+                'light': '#E6F0F6',        // Azul bem claro para fundos
+                'brand-blue': '#015da2',   // Azul da logo Suporte Smart
+                'accent': '#F97316',       // Laranja vibrante para destaque
+                'accent-dark': '#EA580C',  // Laranja mais escuro para hovers
+                'whatsapp': '#25D366',     // Verde do WhatsApp
+                'whatsapp-dark': '#128C7E',// Verde escuro para hover
+              },
+            },
+          },
+          plugins: [],
+        }
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="{{ url_for('static', filename='images/logosemfundo.png') }}" type="image/png">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-shadow {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-target {
+            scroll-margin-top: 5rem; /* 80px */
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- CABEÇALHO -->
+    <header class="bg-light shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="{{ url_for('home') }}" class="flex items-center">
+                <!-- ALTERAÇÕES AQUI -->
+                <img src="{{ url_for('static', filename='images/logosemfundo.png') }}" alt="Logo Suporte Smart Paragominas" class="h-12 md:h-14 w-auto">
+            </a>
+            <!-- Links de Navegação (Desktop) -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{{ url_for('home') }}#inicio" class="text-slate-600 hover:text-primary font-semibold">Início</a>
+                <!-- Menu Suspenso de Categorias -->
+                <div class="relative" id="categories-dropdown-container">
+                    <button id="categories-btn" class="text-slate-600 hover:text-primary font-semibold flex items-center">
+                        Categorias
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="categories-menu" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
+                        {% for category in all_categories %}
+                            <a href="{{ url_for('category_page', category_id=category.id) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">{{ category.name }}</a>
+                        {% else %}
+                            <span class="block px-4 py-2 text-sm text-slate-500">Nenhuma categoria</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="{{ url_for('home') }}#sobre" class="text-slate-600 hover:text-primary font-semibold">Sobre Nós</a>
+                <a href="{{ url_for('home') }}#faq" class="text-slate-600 hover:text-primary font-semibold">Dúvidas</a>
+            </div>
+            <!-- Botão de Contato e Carrinho (Desktop) -->
+            <div class="hidden md:flex items-center space-x-4">
+                <!-- Ícone do Carrinho -->
+                <a href="{{ url_for('view_cart') }}" class="relative text-slate-600 hover:text-primary p-2 rounded-full hover:bg-slate-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {% if cart_item_count > 0 %}
+                    <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="https://wa.me/5591991171818" target="_blank" class="bg-primary text-white font-bold py-2 px-5 rounded-lg hover:bg-primary-dark transition duration-300">
+                    Fale Conosco
+                </a>
+            </div>
+            <!-- Menu Hamburguer (Mobile) -->
+            <div class="md:hidden flex items-center space-x-2">
+                <!-- Ícone do Carrinho (Mobile) -->
+                <a href="{{ url_for('view_cart') }}" class="relative text-gray-700 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {% if cart_item_count > 0 %}
+                    <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
+                    {% endif %}
+                </a>
+                <button id="menu-btn" class="text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+         <!-- Menu Mobile (oculto por padrão) -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="{{ url_for('home') }}#inicio" class="block py-2 px-4 text-sm text-slate-700 hover:bg-slate-100">Início</a>
+            <a href="{{ url_for('home') }}#categorias" class="block py-2 px-4 text-sm text-slate-700 hover:bg-slate-100">Categorias</a>
+            <a href="{{ url_for('home') }}#sobre" class="block py-2 px-4 text-sm text-slate-700 hover:bg-slate-100">Sobre Nós</a>
+            <a href="{{ url_for('home') }}#faq" class="block py-2 px-4 text-sm text-slate-700 hover:bg-slate-100">Dúvidas</a>
+            <div class="p-4">
+                <a href="https://wa.me/5591991171818" target="_blank" class="w-full text-center bg-primary text-white font-bold py-2 px-5 rounded-lg hover:bg-primary-dark transition duration-300">
+                    Fale Conosco
+                </a>
+            </div>
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <!-- RODAPÉ -->
+    <footer class="bg-brand-blue text-white mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h3 class="font-bold text-xl mb-4">Suporte Smart PGM</h3>
+                    <p class="text-light/80">Tecnologia e acessórios para sua vida conectada. A sua referência em Paragominas/Pará.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('home') }}#sobre" class="text-light/80 hover:text-white">Sobre Nós</a></li>
+                        <li><a href="{{ url_for('home') }}#faq" class="text-light/80 hover:text-white">Dúvidas Frequentes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl mb-4">Contato</h3>
+                    <p class="text-light/80 mb-1">
+                        <a href="https://www.google.com/maps/search/?api=1&query=2J4W%2BC5%20Centro,%20Paragominas%20-%20PA" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                            Rua Estado da Bahia, 276 - Célio Miranda, Paragominas-PA, 68625-070
+                        </a>
+                    </p>
+                    <p class="text-light/80">WhatsApp: <a href="https://wa.me/5591991171818" target="_blank" class="hover:underline">(91) 99117-1818</a></p>
+                </div>
+            </div>
+            <div class="border-t border-primary-dark mt-8 pt-6 text-center text-light/70">
+                <p>&copy; 2025 Suporte Smart Paragominas. Todos os direitos reservados.</p>
+                <p>
+                    Desenvolvido por <a href="https://clickfacil.vercel.app" target="_blank" rel="noopener noreferrer" class="hover:underline">Click Fácil</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5591991171818?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es." target="_blank" class="fixed bottom-5 right-5 bg-green-500 p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.001 2C5.031 2 1 6.031 1 11c0 1.657.443 3.223 1.238 4.599L1 20l4.485-1.244A8.935 8.935 0 0010.001 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16.5c-1.499 0-2.91-.354-4.131-1.003L3.5 18.5l1.03-2.368A7.459 7.459 0 012.5 11c0-4.136 3.364-7.5 7.501-7.5 4.136 0 7.5 3.364 7.5 7.5s-3.364 7.5-7.5 7.5zm4.32-5.047c-.225-.112-1.327-.655-1.533-.73-.205-.075-.354-.112-.504.112s-.579.73-.71 .87c-.13.14-.26.158-.485.047-.225-.112-.947-.348-1.802-1.11-.665-.592-1.11-1.327-1.24-1.552-.13-.225-.015-.348.1-.46s.225-.26.338-.39c.112-.13.15-.225.225-.375.075-.15.038-.282-.015-.39s-.504-1.212-.69-1.657c-.18-.432-.368-.375-.504-.375h-.47c-.13 0-.354.038-.534.188-.18.15-.69.678-.69 1.657s.71 1.922.815 2.057c.105.135 1.392 2.123 3.375 2.978.486.206.87.33 1.17.423.465.14.87.12 1.205.075.38-.045 1.327-.542 1.512-1.072.18-.53.18-1.004.13-1.072-.05-.068-.195-.113-.42-.225z" />
+        </svg>
+    </a>
+
+    <!-- SCRIPTS COMPLETOS -->
+    <script>
+        // Lógica para o menu mobile
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Lógica para o menu suspenso de categorias
+        const categoriesBtn = document.getElementById('categories-btn');
+        const categoriesMenu = document.getElementById('categories-menu');
+        const dropdownContainer = document.getElementById('categories-dropdown-container');
+
+        // Garante que os elementos existem antes de adicionar os listeners
+        if (categoriesBtn && categoriesMenu && dropdownContainer) {
+            categoriesBtn.addEventListener('click', (event) => {
+                event.stopPropagation(); // Impede que o clique se propague para o document
+                categoriesMenu.classList.toggle('hidden');
+            });
+            
+            // Esconde o menu se clicar fora dele
+            document.addEventListener('click', (event) => {
+                if (!dropdownContainer.contains(event.target)) {
+                    categoriesMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Função para gerar o link do WhatsApp a partir do carrinho
+        function finalizarCompraWhatsApp() {
+            const numero = "5591991171818";
+            let mensagem = "Olá! Gostaria de fazer um pedido com os seguintes itens:\n\n";
+            const cartItems = document.querySelectorAll('.cart-item');
+            
+            if (cartItems.length === 0) {
+                alert("Seu carrinho está vazio!");
+                return;
+            }
+
+            cartItems.forEach(item => {
+                const name = item.dataset.name;
+                const quantity = item.dataset.quantity;
+                mensagem += `- ${quantity}x ${name}\n`;
+            });
+
+            const totalFormatado = document.getElementById('cart-total').innerText;
+            mensagem += `\n*Total do Pedido: ${totalFormatado}*`;
+            
+            const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+        }
+
+        // Lógica para as animações de scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
