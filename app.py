@@ -303,14 +303,14 @@ def logout():
 
 # --- ROTAS DO PAINEL ADMINISTRATIVO ---
 @app.route('/admin')
-@login_required
+# @login_required
 def admin_dashboard():
     products = Product.query.order_by(Product.id.desc()).all()
     return render_template('admin_dashboard.html', products=products, title="Painel de Produtos")
 
 # ROTA ADICIONAR PRODUTO
 @app.route('/admin/produto/adicionar', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def add_product():
     form = ProductForm()
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
@@ -334,7 +334,7 @@ def add_product():
 
 # ROTA EDITAR PRODUTO
 @app.route('/admin/produto/editar/<int:product_id>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def edit_product(product_id):
     product = db.get_or_404(Product, product_id)
     form = ProductForm(obj=product)
@@ -359,7 +359,7 @@ def edit_product(product_id):
 
 # ROTA APAGAR PRODUTO
 @app.route('/admin/produto/apagar/<int:product_id>', methods=['POST'])
-@login_required
+#@login_required
 def delete_product(product_id):
     product = db.get_or_404(Product, product_id)
     
@@ -377,7 +377,7 @@ def delete_product(product_id):
 
 # NOVA ROTA: GERIR GALERIA DE IMAGENS
 @app.route('/admin/produto/galeria/<int:product_id>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def manage_gallery(product_id):
     product = db.get_or_404(Product, product_id)
     form = ImageUploadForm()
@@ -394,7 +394,7 @@ def manage_gallery(product_id):
 
 # NOVA ROTA: APAGAR IMAGEM DA GALERIA
 @app.route('/admin/imagem/apagar/<int:image_id>', methods=['POST'])
-@login_required
+#@login_required
 def delete_image(image_id):
     image = db.get_or_404(ProductImage, image_id)
     product_id = image.product_id
@@ -408,7 +408,7 @@ def delete_image(image_id):
 
 # ROTAS DE CATEGORIA
 @app.route('/admin/categorias', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def admin_categories():
     form = CategoryForm()
     if form.validate_on_submit():
@@ -422,7 +422,7 @@ def admin_categories():
     return render_template('admin_categories.html', title='Gerir Categorias', form=form, categories=categories)
 
 @app.route('/admin/categoria/apagar/<int:category_id>', methods=['POST'])
-@login_required
+#@login_required
 def delete_category(category_id):
     category = db.get_or_404(Category, category_id)
     product_count = len(category.products)
