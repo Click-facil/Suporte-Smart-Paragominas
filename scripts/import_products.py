@@ -1,53 +1,89 @@
+# scripts/import_products.py
+
 import csv
 from decimal import Decimal
+# Importa as configurações do app a partir do diretório pai
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import app, db, Product, Category
 
+# ATENÇÃO: Altere este caminho dependendo de onde você vai rodar o script
+# Para rodar localmente, use o caminho relativo
 CSV_FILENAME = 'produtos_exportados.csv'
+# Para rodar no Render com Disco Persistente, use o caminho absoluto do disco
+# CSV_FILENAME = '/var/data/produtos_exportados.csv'
 
 def import_data():
-    """Lê os produtos do arquivo CSV e os salva no banco de dados."""
+    """Lê produtos do CSV e os cria ou atualiza no banco de dados."""
+    created_count = 0
+    updated_count = 0
+    
     with app.app_context():
-        print("Iniciando importação de produtos...")
+        print("Iniciando importação/atualização de produtos...")
         
         try:
             with open(CSV_FILENAME, 'r', encoding='utf-8') as f:
                 reader = csv.reader(f)
-                next(reader) # Pula o cabeçalho
+                header = next(reader) # Pula o cabeçalho
 
                 for row in reader:
-                    # Pega o nome da categoria do CSV e encontra o objeto Categoria correspondente
-                    category_name = row[7]
+                    # Mapeia a linha do CSV para um dicionário para fácil acesso
+                    data = dict(zip(header, row))
+                    
+                    product_name = data.get('name')
+                    if not product_name:
+                        continue
+
+                    category_name = data.get('category_name')
                     category = Category.query.filter_by(name=category_name).first()
 
                     if not category:
-                        print(f"AVISO: Categoria '{category_name}' não encontrada. Pulando produto '{row[1]}'. Certifique-se de que as categorias já existem no painel do Render.")
+                        print(f"AVISO: Categoria '{category_name}' não encontrada. Pulando produto '{product_name}'.")
                         continue
+                    
+                    # Converte os valores
+                    price = Decimal(data.get('price'))
+                    promo_price = Decimal(data.get('promo_price')) if data.get('promo_price') else None
+                    is_featured = True if data.get('is_featured', '').lower() == 'true' else False
 
-                    # Converte os valores de volta para os tipos corretos
-                    price = Decimal(row[3])
-                    promo_price = Decimal(row[4]) if row[4] else None
-                    is_featured = True if row[6].lower() == 'true' else False
+                    # A LÓGICA PRINCIPAL: VERIFICA SE O PRODUTO JÁ EXISTE
+                    product = Product.query.filter_by(name=product_name).first()
 
-                    # Cria o novo produto
-                    new_product = Product(
-                        name=row[1],
-                        description=row[2],
-                        price=price,
-                        promo_price=promo_price,
-                        image_file=row[5],
-                        is_featured=is_featured,
-                        category_id=category.id
-                    )
-                    db.session.add(new_product)
+                    if product:
+                        # SE EXISTE, ATUALIZA
+                        product.description = data.get('description')
+                        product.price = price
+                        product.promo_price = promo_price
+                        product.image_file = data.get('image_file', 'placeholder.png')
+                        product.is_featured = is_featured
+                        product.category_id = category.id
+                        updated_count += 1
+                    else:
+                        # SE NÃO EXISTE, CRIA
+                        new_product = Product(
+                            name=product_name,
+                            description=data.get('description'),
+                            price=price,
+                            promo_price=promo_price,
+                            image_file=data.get('image_file', 'placeholder.png'),
+                            is_featured=is_featured,
+                            category_id=category.id
+                        )
+                        db.session.add(new_product)
+                        created_count += 1
                 
                 db.session.commit()
-                print("Importação concluída com sucesso!")
+                print("--- Resumo da Importação ---")
+                print(f"Produtos criados: {created_count}")
+                print(f"Produtos atualizados: {updated_count}")
+                print("----------------------------")
 
         except FileNotFoundError:
-            print(f"ERRO: Arquivo '{CSV_FILENAME}' não encontrado.")
+            print(f"ERRO: Arquivo de importação '{CSV_FILENAME}' não foi encontrado.")
         except Exception as e:
             db.session.rollback()
-            print(f"Ocorreu um erro durante a importação: {e}")
+            print(f"Ocorreu um erro inesperado. Nenhuma alteração foi salva. Erro: {e}")
 
 if __name__ == '__main__':
     import_data()

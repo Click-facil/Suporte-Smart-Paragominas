@@ -19,3 +19,6 @@ __pycache__/
 # Arquivo de variáveis de ambiente locais
 .env
 
+# Arquivo de exportação de CSV
+produtos_exportados.csv
+
