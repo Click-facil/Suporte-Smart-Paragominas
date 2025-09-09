@@ -11,9 +11,6 @@ __pycache__/
 
 # Arquivos de configuração de IDEs
 .vscode/
-
-# Arquivos de configuração de IDEs
-.vscode/
 .idea/
 
 # Arquivo de variáveis de ambiente locais
@@ -21,4 +18,3 @@ __pycache__/
 
 # Arquivo de exportação de CSV
 produtos_exportados.csv
-
