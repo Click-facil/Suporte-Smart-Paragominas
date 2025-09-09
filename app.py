@@ -2,7 +2,7 @@ import os
 import secrets
 from dotenv import load_dotenv
 from PIL import Image
-from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, jsonify
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -267,8 +267,13 @@ def add_to_cart(product_id):
     session['cart'] = cart
     session.modified = True
     
-    flash(f'"{product.name}" foi adicionado ao seu carrinho!', 'success')
-    return redirect(request.referrer or url_for('loja'))
+    # Calcula a nova contagem de itens no carrinho
+    cart_item_count = sum(item.get('quantity', 0) for item in cart.values())
+
+    # Retorna uma resposta JSON para ser processada pelo JavaScript no front-end
+    return jsonify(success=True, 
+                   message=f'"{product.name}" foi adicionado ao seu carrinho!', 
+                   cart_item_count=cart_item_count)
 
 @app.route('/carrinho')
 def view_cart():
@@ -294,7 +299,7 @@ def remove_from_cart(product_id):
     cart = session.get('cart', {})
     if product_id in cart:
         del cart[product_id]
-        flash('Produto removido do carrinho.', 'success')
+        # flash('Produto removido do carrinho.', 'success') # Mensagem removida conforme solicitado
     session['cart'] = cart
     session.modified = True
     return redirect(url_for('view_cart'))

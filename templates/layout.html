@@ -107,7 +107,7 @@
                 </div>
                 <a href="{{ url_for('home') }}#sobre" class="text-slate-600 hover:text-primary font-semibold">Sobre Nós</a>
                 <a href="{{ url_for('home') }}#faq" class="text-slate-600 hover:text-primary font-semibold">Dúvidas</a>
-            </div>
+            </div> 
             <!-- Botão de Contato e Carrinho (Desktop) -->
             <div class="hidden md:flex items-center space-x-4">
                 <!-- Ícone do Carrinho -->
@@ -116,7 +116,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     {% if cart_item_count > 0 %}
-                    <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
+                    <span id="cart-count" class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
                     {% endif %}
                 </a>
                 <a href="https://wa.me/5591991171818" target="_blank" class="bg-primary text-white font-bold py-2 px-5 rounded-lg hover:bg-primary-dark transition duration-300">
@@ -131,7 +131,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     {% if cart_item_count > 0 %}
-                    <span class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
+                    <span id="cart-count-mobile" class="absolute top-0 right-0 block h-5 w-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{{ cart_item_count }}</span>
                     {% endif %}
                 </a>
                 <button id="menu-btn" class="text-gray-700 focus:outline-none">
@@ -260,6 +260,49 @@
 
         document.querySelectorAll('.animate-on-scroll').forEach(el => {
             observer.observe(el);
+        });
+
+        // Lógica para adicionar ao carrinho sem recarregar a página (AJAX)
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('.add-to-cart-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Impede o envio padrão do formulário
+
+                    const url = form.action;
+                    const formData = new FormData(form);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest' // Cabeçalho comum para requisições AJAX
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Atualiza o contador do carrinho no cabeçalho
+                            const cartCountEl = document.getElementById('cart-count');
+                            const cartCountMobileEl = document.getElementById('cart-count-mobile');
+                            
+                            if (cartCountEl) {
+                                cartCountEl.innerText = data.cart_item_count;
+                            }
+                            if (cartCountMobileEl) {
+                                cartCountMobileEl.innerText = data.cart_item_count;
+                            }
+
+                            // (Opcional) Feedback visual no botão
+                            const button = form.querySelector('button[type="submit"]');
+                            const originalText = button.innerHTML;
+                            button.innerHTML = 'Adicionado!';
+                            setTimeout(() => { button.innerHTML = originalText; }, 2000);
+                        }
+                    })
+                    .catch(error => console.error('Erro ao adicionar ao carrinho:', error));
+                });
+            });
         });
     </script>
 </body>
