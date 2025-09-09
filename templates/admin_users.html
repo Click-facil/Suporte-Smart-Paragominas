@@ -1,0 +1,79 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center mb-6">
+        <a href="{{ url_for('admin_dashboard') }}" class="text-primary hover:text-primary-dark font-semibold mr-4">← Voltar para Produtos</a>
+        <h2 class="text-3xl font-bold text-slate-800">Gerir Usuários</h2>
+    </div>
+
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'danger' else 'bg-yellow-100 text-yellow-800' if category == 'warning' else 'bg-blue-100 text-blue-800' }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Card de Adicionar Usuário -->
+        <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Adicionar Novo Usuário</h3>
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="space-y-4">
+                    <div>
+                        {{ form.username.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                        {{ form.username(class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary") }}
+                        {% if form.username.errors %}
+                            <div class="text-red-500 text-xs mt-1">
+                                {% for error in form.username.errors %}<span>{{ error }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                        {{ form.password(class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary") }}
+                        {% if form.password.errors %}
+                            <div class="text-red-500 text-xs mt-1">
+                                {% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mt-6">
+                    {{ form.submit(class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition cursor-pointer") }}
+                </div>
+            </form>
+        </div>
+
+        <!-- Card de Usuários Existentes -->
+        <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Usuários Existentes</h3>
+            <ul class="space-y-3">
+                {% for user in users %}
+                <li class="flex justify-between items-center p-3 bg-light/50 rounded-lg border border-slate-200">
+                    <span class="font-medium text-slate-700">{{ user.username }}</span>
+                    
+                    <!-- Não permitir apagar o próprio usuário ou o admin principal (ID 1) -->
+                    {% if user.id != current_user.id and user.id != 1 %}
+                    <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja apagar o usuário \'{{ user.username }}\'?');">
+                        <button type="submit" class="text-red-500 hover:text-red-700 font-semibold text-sm">Apagar</button>
+                    </form>
+                    {% else %}
+                        <span class="text-sm text-gray-400 italic">
+                            {% if user.id == 1 %}Principal{% else %}Atual{% endif %}
+                        </span>
+                    {% endif %}
+                </li>
+                {% else %}
+                <li class="text-gray-500">Nenhum usuário encontrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

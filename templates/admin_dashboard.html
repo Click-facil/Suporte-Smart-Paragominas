@@ -2,12 +2,15 @@
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h2 class="text-3xl font-bold text-gray-800">Produtos</h2>
+    <h2 class="text-3xl font-bold text-slate-800">Produtos</h2>
     <div>
+        <a href="{{ url_for('admin_users') }}" class="bg-white text-gray-700 font-bold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition mr-2">
+            Gerir Usuários
+        </a>
         <a href="{{ url_for('admin_categories') }}" class="bg-white text-gray-700 font-bold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition mr-2">
             Gerir Categorias
         </a>
-        <a href="{{ url_for('add_product') }}" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+        <a href="{{ url_for('add_product') }}" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition">
             Adicionar Novo Produto
         </a>
     </div>
@@ -17,7 +20,7 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
-            <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'danger' else 'bg-yellow-100 text-yellow-800' if category == 'warning' else 'bg-blue-100 text-blue-800' }}" role="alert">
+            <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'danger' else 'bg-yellow-100 text-yellow-800' if category == 'warning' else 'bg-light text-primary-dark' }}" role="alert">
                 {{ message }}
             </div>
         {% endfor %}
@@ -26,9 +29,9 @@
 
 <div class="bg-white rounded-2xl shadow-lg overflow-x-auto">
     <table class="w-full text-sm text-left text-gray-600">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <thead class="text-xs text-slate-700 uppercase bg-light/60">
             <tr>
-                <th scope="col" class="px-6 py-3">Imagem</th>
+                <th scope="col" class="px-6 py-3 w-20">Imagem</th>
                 <th scope="col" class="px-6 py-3">Nome do Produto</th>
                 <th scope="col" class="px-6 py-3">Preço</th>
                 <th scope="col" class="px-6 py-3">Categoria</th>
@@ -38,24 +41,24 @@
         </thead>
         <tbody>
             {% for product in products %}
-            <tr class="bg-white border-b hover:bg-gray-50">
+            <tr class="bg-white border-b border-slate-200 hover:bg-slate-50/50">
                 <td class="px-6 py-4">
                     <img src="{{ url_for('static', filename='product_pics/' + product.image_file) }}" alt="{{ product.name }}" class="w-12 h-12 object-cover rounded-md">
                 </td>
-                <td class="px-6 py-4 font-semibold text-gray-900">{{ product.name }}</td>
-                <td class="px-6 py-4">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</td>
-                <td class="px-6 py-4">{{ product.category.name }}</td>
+                <td class="px-6 py-4 font-semibold text-slate-800">{{ product.name }}</td>
+                <td class="px-6 py-4 text-slate-600">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</td>
+                <td class="px-6 py-4 text-slate-600">{{ product.category.name }}</td>
                 <td class="px-6 py-4">
                     {% if product.is_featured %}
-                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-200 rounded-full">Sim</span>
+                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Sim</span>
                     {% else %}
-                        <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">Não</span>
+                        <span class="px-2 py-1 text-xs font-semibold text-slate-800 bg-slate-100 rounded-full">Não</span>
                     {% endif %}
                 </td>
                 <td class="px-6 py-4 text-right">
                     <!-- NOVO BOTÃO DE GALERIA -->
-                    <a href="{{ url_for('manage_gallery', product_id=product.id) }}" class="font-medium text-purple-600 hover:underline mr-3">Galeria</a>
-                    <a href="{{ url_for('edit_product', product_id=product.id) }}" class="font-medium text-blue-600 hover:underline mr-3">Editar</a>
+                    <a href="{{ url_for('manage_gallery', product_id=product.id) }}" class="font-medium text-indigo-600 hover:underline mr-3">Galeria</a>
+                    <a href="{{ url_for('edit_product', product_id=product.id) }}" class="font-medium text-primary hover:underline mr-3">Editar</a>
                     <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" class="inline" onsubmit="return confirm('Tem a certeza que deseja apagar este produto? Esta ação não pode ser desfeita.');">
                         <button type="submit" class="font-medium text-red-600 hover:underline">Apagar</button>
                     </form>
@@ -70,4 +73,3 @@
     </table>
 </div>
 {% endblock %}
-

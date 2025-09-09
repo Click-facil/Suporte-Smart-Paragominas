@@ -108,6 +108,16 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Lembrar de mim')
     submit = SubmitField('Entrar')
 
+class UserForm(FlaskForm):
+    username = StringField('Nome de Usuário', validators=[DataRequired(), Length(min=4, max=20)])
+    password = PasswordField('Senha', validators=[DataRequired(), Length(min=6)])
+    submit = SubmitField('Adicionar Usuário')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Este nome de usuário já está em uso. Por favor, escolha outro.')
+
 class CategoryForm(FlaskForm):
     name = StringField('Nome da Categoria', validators=[DataRequired(), Length(min=2, max=50)])
     submit = SubmitField('Salvar Categoria')
@@ -305,6 +315,7 @@ def logout():
 @app.route('/admin')
 @login_required
 def admin_dashboard():
+    """Página principal do painel administrativo."""
     products = Product.query.order_by(Product.id.desc()).all()
     return render_template('admin_dashboard.html', products=products, title="Painel de Produtos")
 
@@ -312,6 +323,7 @@ def admin_dashboard():
 @app.route('/admin/produto/adicionar', methods=['GET', 'POST'])
 @login_required
 def add_product():
+    """Adiciona um novo produto ao banco de dados."""
     form = ProductForm()
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
     if form.validate_on_submit():
@@ -336,6 +348,7 @@ def add_product():
 @app.route('/admin/produto/editar/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def edit_product(product_id):
+    """Edita um produto existente."""
     product = db.get_or_404(Product, product_id)
     form = ProductForm(obj=product)
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
@@ -361,6 +374,7 @@ def edit_product(product_id):
 @app.route('/admin/produto/apagar/<int:product_id>', methods=['POST'])
 @login_required
 def delete_product(product_id):
+    """Apaga um produto e todas as suas imagens associadas."""
     product = db.get_or_404(Product, product_id)
     
     # Apagar imagem principal do sistema de arquivos
@@ -379,6 +393,7 @@ def delete_product(product_id):
 @app.route('/admin/produto/galeria/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def manage_gallery(product_id):
+    """Página para gerir a galeria de imagens de um produto."""
     product = db.get_or_404(Product, product_id)
     form = ImageUploadForm()
     if form.validate_on_submit():
@@ -396,6 +411,7 @@ def manage_gallery(product_id):
 @app.route('/admin/imagem/apagar/<int:image_id>', methods=['POST'])
 @login_required
 def delete_image(image_id):
+    """Apaga uma imagem específica da galeria de um produto."""
     image = db.get_or_404(ProductImage, image_id)
     product_id = image.product_id
     # Apagar o arquivo físico da imagem
@@ -410,6 +426,7 @@ def delete_image(image_id):
 @app.route('/admin/categorias', methods=['GET', 'POST'])
 @login_required
 def admin_categories():
+    """Página para gerir as categorias de produtos."""
     form = CategoryForm()
     if form.validate_on_submit():
         new_category = Category(name=form.name.data)
@@ -424,6 +441,7 @@ def admin_categories():
 @app.route('/admin/categoria/apagar/<int:category_id>', methods=['POST'])
 @login_required
 def delete_category(category_id):
+    """Apaga uma categoria, se ela não tiver produtos associados."""
     category = db.get_or_404(Category, category_id)
     product_count = len(category.products)
     if product_count > 0:
@@ -435,6 +453,41 @@ def delete_category(category_id):
     flash(f'Categoria "{category.name}" apagada com sucesso!', 'danger')
     return redirect(url_for('admin_categories'))
 
+# --- ROTAS DE GESTÃO DE USUÁRIOS ---
+@app.route('/admin/usuarios', methods=['GET', 'POST'])
+@login_required
+def admin_users():
+    """Página para gerir os usuários administradores."""
+    form = UserForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        new_user = User(username=form.username.data, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Novo usuário administrador criado com sucesso!', 'success')
+        return redirect(url_for('admin_users'))
+    
+    users = User.query.order_by(User.id).all()
+    return render_template('admin_users.html', title='Gerir Usuários', form=form, users=users)
+
+@app.route('/admin/usuario/apagar/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    """Apaga um usuário administrador."""
+    user_to_delete = db.get_or_404(User, user_id)
+    
+    if user_to_delete.id == current_user.id:
+        flash('Você não pode apagar a sua própria conta.', 'warning')
+        return redirect(url_for('admin_users'))
+
+    if user_to_delete.id == 1:
+        flash('A conta do administrador principal não pode ser apagada.', 'danger')
+        return redirect(url_for('admin_users'))
+
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    flash(f'Usuário "{user_to_delete.username}" apagado com sucesso!', 'danger')
+    return redirect(url_for('admin_users'))
 
 if __name__ == '__main__':
     app.run(debug=True)
