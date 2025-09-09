@@ -21,6 +21,17 @@ app = Flask(__name__)
 # Usa variáveis de ambiente para segurança e flexibilidade
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'uma-chave-secreta-padrao-para-desenvolvimento')
 
+# --- Configurações de Cookie para maior segurança e compatibilidade ---
+# Isso é crucial para que o login funcione corretamente em todos os navegadores,
+# especialmente em dispositivos móveis e em produção (HTTPS).
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
+
+# Em produção (como no Render), o tráfego é via HTTPS, então os cookies devem ser 'Secure'.
+if not app.debug:
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = True
+
 # Pega a URL do banco de dados do ambiente, com um fallback para o SQLite local
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///suportesmart.db')
 

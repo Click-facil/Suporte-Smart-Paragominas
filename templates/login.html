@@ -9,19 +9,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - Admin Suporte Smart</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuração da paleta de cores personalizada para o Tailwind CSS
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'primary': '#015da2',      // Azul principal
+                'primary-dark': '#014a81', // Tom mais escuro para hovers
+                'light': '#E6F0F6',        // Azul bem claro para fundos
+              },
+            },
+          },
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="bg-light flex items-center justify-center h-screen p-4">
     <div class="w-full max-w-md">
         <form method="POST" action="" class="bg-white shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4">
-            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Login do Admin</h1>
+            <h1 class="text-3xl font-bold text-center text-slate-800 mb-6">Login do Admin</h1>
             
             <!-- Mensagens de feedback -->
             {% with messages = get_flashed_messages(with_categories=true) %}
               {% if messages %}
                 {% for category, message in messages %}
-                  <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-red-100 text-red-800' if category == 'danger' else 'bg-blue-100 text-blue-800' }}" role="alert">
+                  <div class="p-4 mb-4 text-sm rounded-lg {{ 'bg-red-100 text-red-800' if category == 'danger' else 'bg-light text-primary-dark' }}" role="alert">
                     {{ message }}
                   </div>
                 {% endfor %}
@@ -30,23 +44,24 @@
 
             {{ form.hidden_tag() }}
             <div class="mb-4">
-                {{ form.username.label(class="block text-gray-700 text-sm font-bold mb-2") }}
-                {{ form.username(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                {{ form.username.label(class="block text-slate-700 text-sm font-bold mb-2") }}
+                {{ form.username(class="shadow-sm appearance-none border border-slate-300 rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary") }}
             </div>
             <div class="mb-6">
-                {{ form.password.label(class="block text-gray-700 text-sm font-bold mb-2") }}
-                {{ form.password(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline") }}
+                {{ form.password.label(class="block text-slate-700 text-sm font-bold mb-2") }}
+                {{ form.password(class="shadow-sm appearance-none border border-slate-300 rounded w-full py-2 px-3 text-slate-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary") }}
             </div>
             <div class="flex items-center justify-between">
-                {{ form.submit(class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer") }}
+                {{ form.submit(class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer transition") }}
                 <div class="flex items-center">
-                    {{ form.remember(class="mr-2 leading-tight") }}
-                    {{ form.remember.label(class="text-sm text-gray-600") }}
+                    {{ form.remember(class="h-4 w-4 text-primary border-slate-300 rounded focus:ring-primary mr-2") }}
+                    {{ form.remember.label(class="text-sm text-slate-600") }}
                 </div>
             </div>
         </form>
-        <p class="text-center text-gray-500 text-xs">flask shell
-            &copy;2024 Suporte Smart Paragominas.
+        <p class="text-center text-slate-500 text-xs">
+            &copy;2025 Suporte Smart Paragominas. <br>
+            Desenvolvido por <a href="https://clickfacil.vercel.app" target="_blank" class="font-semibold text-slate-600 hover:underline">Click Fácil</a>
         </p>
     </div>
 </body>
