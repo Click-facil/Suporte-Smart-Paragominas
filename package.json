@@ -1,0 +1,25 @@
+{
+  "name": "suportesmartpgm",
+  "version": "1.0.0",
+  "description": "Um sistema de gerenciamento de conteúdo (CMS) personalizado para o site da Suporte Smart, permitindo o controle fácil e seguro do catálogo de produtos e outros conteúdos dinâmicos.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Click-facil/Suporte-Smart-Paragominas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Click-facil/Suporte-Smart-Paragominas/issues"
+  },
+  "homepage": "https://github.com/Click-facil/Suporte-Smart-Paragominas#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "sqlite3": "^5.1.7"
+  }
+}

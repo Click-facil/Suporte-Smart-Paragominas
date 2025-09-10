@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio de Inauguração - Suporte Smart</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <main>
+            <div class="hero-section">
+                <img src="/static/images/iphone-sorteio.png" alt="iPhone que será sorteado" class="iphone-img">
+            </div>
+
+            <div class="content-area">
+                <h1>Concorra a um iPhone Novinho!</h1>
+                <p>É o nosso presente de inauguração para você. Preencha seus dados, participe e boa sorte!</p>
+                <form action="/api/registrar-sorteio" method="POST" id="formSorteio">
+                    <div class="input-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Seu Melhor E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="whatsapp">WhatsApp</label>
+                        <input type="tel" id="whatsapp" name="whatsapp" placeholder="(XX) XXXXX-XXXX" required>
+                    </div>
+
+                    <div class="consent-group">
+                        <input type="checkbox" id="lgpd" name="lgpd" required>
+                        <label for="lgpd">
+                            Eu concordo em receber comunicações da Suporte Smart e aceito os 
+                            <a href="/regulamento.html" target="_blank">termos do sorteio</a>.
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="cta-button">QUERO PARTICIPAR AGORA!</button>
+                </form>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Suporte Smart - Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+/* Reset básico e configurações globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-blue: #015da2;
+    --dark-blue: #014a81;
+    --accent-orange: #F97316;
+    --dark-accent-orange: #EA580C;
+    --bg-light-blue: #E6F0F6;
+    --text-dark: #2c3e50;
+    --text-light: #5f7a8b;
+    --border-color: #d2d6db;
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-light-blue);
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Container principal */
+.container {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    overflow: hidden; /* Garante que a imagem respeite as bordas arredondadas */
+}
+
+/* Seção da Imagem */
+.hero-section {
+    margin-bottom: 0;
+}
+
+.iphone-img {
+    width: 100%;
+    height: auto;
+    display: block; /* Remove espaço extra embaixo da imagem */
+}
+
+/* Área de Conteúdo (Título e Formulário) */
+.content-area {
+    padding: 25px 35px 30px 35px;
+}
+
+.content-area h1 {
+    font-family: var(--font-heading);
+    font-size: 2.1em;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.content-area p {
+    font-size: 1.05em;
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+
+/* Estilos do Formulário */
+.input-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-size: 0.95em;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(1, 93, 162, 0.2);
+}
+
+.consent-group {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 25px;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.consent-group input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.consent-group a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.cta-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--accent-orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.15em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.cta-button:hover {
+    background-color: var(--dark-accent-orange);
+    transform: translateY(-2px);
+}
+
+footer {
+    padding: 20px;
+    font-size: 0.8em;
+    color: var(--text-light);
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
