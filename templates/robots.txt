@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Informa ao Google e outros buscadores a localização exata do mapa do site.
-Sitemap: https://suporte-smart-paragominas.onrender.com/sitemap.xml
+Sitemap: https://www.suportesmartparagominas.com.br/sitemap.xml
