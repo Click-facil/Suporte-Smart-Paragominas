@@ -202,28 +202,27 @@ def product_detail(product_id):
 
 @app.route('/sitemap.xml')
 def sitemap():
-    """Gera o sitemap.xml para o site."""
+    """Gera o sitemap.xml para o site com o domínio correto."""
+    
+    # Define a URL base oficial do site
+    base_url = "https://www.suportesmartparagominas.com.br"
+    
     pages = []
-    # A data de modificação pode ser estática ou dinâmica se você tiver um campo de timestamp no seu modelo
     last_mod = datetime.now().date().isoformat()
 
     # Páginas estáticas
-    static_urls = [
-        url_for('home', _external=True),
-        url_for('loja', _external=True),
-    ]
-    for url in static_urls:
-        pages.append({'loc': url, 'lastmod': last_mod})
+    pages.append({'loc': f"{base_url}/", 'lastmod': last_mod})
+    pages.append({'loc': f"{base_url}/loja", 'lastmod': last_mod})
 
     # Páginas de produtos
-    products = Product.query.order_by(Product.id.desc()).all()
+    products = Product.query.all()
     for product in products:
-        pages.append({'loc': url_for('product_detail', product_id=product.id, _external=True), 'lastmod': last_mod})
+        pages.append({'loc': f"{base_url}/produto/{product.id}", 'lastmod': last_mod})
 
     # Páginas de categorias
     categories = Category.query.all()
     for category in categories:
-        pages.append({'loc': url_for('category_page', category_id=category.id, _external=True), 'lastmod': last_mod})
+        pages.append({'loc': f"{base_url}/categoria/{category.id}", 'lastmod': last_mod})
 
     sitemap_template = render_template('sitemap.xml', pages=pages)
     response = make_response(sitemap_template)
