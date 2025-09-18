@@ -1,4 +1,6 @@
+# Permite que todos os robôs de busca acessem o site.
 User-agent: *
 Allow: /
 
-Sitemap: {{ url_for('sitemap', _external=True) }}
+# Informa ao Google e outros buscadores a localização exata do mapa do site.
+Sitemap: https://suporte-smart-paragominas.onrender.com/sitemap.xml
