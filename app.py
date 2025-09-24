@@ -12,6 +12,7 @@ from wtforms import StringField, TextAreaField, DecimalField, SubmitField, Passw
 from wtforms.validators import DataRequired, Length, ValidationError, Optional
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
@@ -230,8 +231,8 @@ def sitemap():
     return response
 
 @app.route('/robots.txt')
-def robots():
-    return render_template('robots.txt')
+def robots_txt():
+    return send_from_directory(app.static_folder, 'robots.txt')
 
 # ROTA DE TESTE PARA DEBUG NO RENDER
 @app.route('/teste-debug-123')
