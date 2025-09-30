@@ -25,7 +25,11 @@ Celulares e Acessórios em Paragominas
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8">
             {% for category in all_categories %}
             <a href="{{ url_for('category_page', category_id=category.id) }}" class="bg-white p-6 rounded-lg card-shadow text-center flex flex-col items-center justify-center animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
-                <img src="https://placehold.co/100x100/E6F0F6/014a81?text={{ category.name|replace(' ', '+') }}" class="mx-auto mb-4 rounded-full" alt="Categoria {{ category.name }} na Suporte Smart">
+                {# Tentaremos carregar imagens locais seguindo a convenção: static/category_pics/<category.id>.(png|jpg|jpeg).
+                   Se não existir, um script no final da página trocará para um fallback. #}
+                <div class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 mx-auto mb-4 rounded-full overflow-hidden flex items-center justify-center">
+                    <img data-category-id="{{ category.id }}" src="{{ url_for('static', filename='images/logo.png') }}" class="w-full h-full object-cover category-thumb" alt="Categoria {{ category.name }} na Suporte Smart">
+                </div>
                 <h3 class="text-lg font-semibold text-slate-800">{{ category.name }}</h3>
             </a>
             {% else %}

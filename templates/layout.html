@@ -305,5 +305,58 @@
             });
         });
     </script>
+    <script>
+        // Loader robusto para imagens de categoria:
+        // - tenta HEAD para economizar banda
+        // - se HEAD não for permitido/forçado a falhar, tenta GET com Range '0-0' como fallback
+        // - suporta png, jpg, jpeg e svg
+        (function() {
+            const exts = ['png', 'jpg', 'jpeg'];
+            const staticBase = "{{ url_for('static', filename='') }}"; // termina com '/'
+
+            function tryHeadThenGet(url) {
+                // tenta HEAD primeiro
+                return fetch(url, { method: 'HEAD' })
+                    .then(resp => {
+                        if (resp.ok) return true;
+                        // se retornar 405 (Method Not Allowed) ou outro, sinaliza tentativa de GET
+                        return false;
+                    })
+                    .catch(() => {
+                        // se HEAD falhar (bloqueado, CORS, etc), indica para tentar GET
+                        return false;
+                    })
+                    .then(needGet => {
+                        if (needGet) return true;
+                        // Faz GET mínimo com Range para reduzir transferência (pode devolver 206 Partial Content)
+                        return fetch(url, { method: 'GET', headers: { 'Range': 'bytes=0-0' } })
+                            .then(resp => resp.ok || resp.status === 206)
+                            .catch(() => false);
+                    });
+            }
+
+            document.querySelectorAll('.category-thumb').forEach(img => {
+                const catId = img.dataset.categoryId;
+                if (!catId) return;
+
+                const tryNext = (index) => {
+                    if (index >= exts.length) return; // nenhuma encontrada, manter o src padrão
+                    const ext = exts[index];
+                    const url = staticBase + 'category_pics/' + catId + '.' + ext;
+
+                    tryHeadThenGet(url).then(found => {
+                        if (found) {
+                            img.src = url;
+                        } else {
+                            // tenta próxima extensão
+                            tryNext(index + 1);
+                        }
+                    });
+                };
+
+                tryNext(0);
+            });
+        })();
+    </script>
 </body>
 </html>

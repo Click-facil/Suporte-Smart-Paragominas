@@ -70,3 +70,23 @@ O sistema é automaticamente implementado no [Render](https://render.com) a part
 ## **Licença**
 
 Este projeto é licenciado sob a [MIT License](https://www.google.com/search?q=LICENSE).
+
+## Imagens das categorias (sem alterar o banco)
+
+Se quiser adicionar fotos aos botões da seção "Navegue por Categorias" sem alterar o banco de dados ou criar migrações, siga esta convenção simples:
+
+- Coloque as imagens em: `static/category_pics/`
+- Nomeie cada arquivo com o ID numérico da categoria, por exemplo: `1.png`, `2.jpg`, `3.jpeg`.
+- Suporta as extensões: `.png`, `.jpg`, `.jpeg` (a ordem de prioridade é png → jpg → jpeg).
+
+O frontend tentará automaticamente carregar `static/category_pics/<category_id>.<ext>` para cada categoria. Se nenhuma imagem for encontrada, o site usará o logotipo atual (`static/images/logo.png`) como fallback.
+
+Isso é seguro para usar tanto em desenvolvimento (SQLite) quanto em produção (Postgres no Render) porque não altera o esquema do banco de dados.
+
+Como testar localmente:
+
+1. Pare o servidor se estiver executando.
+2. Coloque algumas imagens com nomes correspondentes aos IDs das categorias existentes no banco.
+3. Reinicie com `flask run` e abra a página inicial — as imagens das categorias devem aparecer automaticamente.
+
+Se quiser uma solução permanente (campo `image_file` na tabela `Category`), recomendo usar `Flask-Migrate` e criar uma migração em um ambiente controlado; posso descrever ou implementar esse fluxo se desejar.
