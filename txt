@@ -21,15 +21,16 @@ db.session.commit()
 # Para verificar, execute esta linha
 User.query.all() 
 
-Resumo do Novo Fluxo de Trabalho
-A partir de agora, seu dia a dia será:
 
-Abra o projeto no VS Code.
+# Verificação de ID
 
-Abra um terminal e rode npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch. Deixe ele rodando.
-
-Trabalhe normalmente nos seus arquivos .html na pasta templates, adicionando e removendo classes do Tailwind.
-
-Cada vez que você salvar, o output.css será atualizado nos bastidores.
-
-Recarregue a página no seu navegador para ver as mudanças.
+$domain='https://www.suportesmartparagominas.com.br'
+1..12 | ForEach-Object {
+  $id=$_; 
+  try {
+    $r = Invoke-WebRequest -Uri "$domain/categoria/$id" -UseBasicParsing -TimeoutSec 6 -ErrorAction Stop
+    $title = ([regex]::Match($r.Content,'<title>(.*?)</title>','Singleline,IgnoreCase').Groups[1].Value).Trim()
+    if (-not $title) { $title = 'sem título detectado' }
+    Write-Host "id=$id -> $title"
+  } catch { Write-Host "id=$id -> (não existe / erro)" }
+}
