@@ -1,31 +1,21 @@
 {% extends "layout.html" %}
 
-{% block title %}
-{{ title }}
-{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block seo_tags %}
     <meta name="description" content="Explore nosso catálogo de {{ title | lower }} e encontre as melhores ofertas em celulares e acessórios em Paragominas.">
     <link rel="canonical" href="{{ request.url_root.rstrip('/') }}{{ request.path }}">
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:title" content="{{ title }} - Suporte Smart Paragominas">
     <meta property="og:description" content="Explore nosso catálogo de {{ title | lower }} e encontre as melhores ofertas em celulares e acessórios em Paragominas.">
     <meta property="og:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}">
-    <meta property="og:site_name" content="Suporte Smart Paragominas">
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="{{ title }} - Suporte Smart Paragominas">
 {% endblock %}
 
 {% block content %}
 <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="text-center mb-12 animate-on-scroll">
-        <!-- O título da página é passado pela rota no app.py -->
         <h1 class="text-4xl font-extrabold text-slate-800">{{ title }}</h1>
-        
-        <!-- Mostra um subtítulo diferente dependendo se é a loja principal ou uma categoria -->
         {% if 'Categoria' in title %}
             <p class="text-lg text-slate-500 mt-2">Veja todos os produtos desta categoria</p>
         {% else %}
@@ -35,39 +25,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {% for product in products %}
-        <div class="bg-white rounded-lg overflow-hidden card-shadow flex flex-col group animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
-            <div class="relative overflow-hidden">
-                <a href="{{ url_for('product_detail', product_id=product.id) }}">
-                    <img src="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png')) }}" alt="{{ product.name }} - Suporte Smart Paragominas" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
-                </a>
-                {% if product.promo_price %}
-                <div class="absolute top-3 right-3 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">PROMO</div>
-                {% endif %}
-            </div>
-            
-            <div class="p-5 flex flex-col flex-grow">
-                <a href="{{ url_for('product_detail', product_id=product.id) }}">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2 hover:text-primary transition-colors truncate">{{ product.name }}</h3>
-                </a>
-                <p class="text-slate-500 text-sm mb-4">{{ product.category.name }}</p>
-                
-                <div class="mt-auto space-y-3">
-                    <div class="flex items-baseline">
-                        {% if product.promo_price %}
-                            <span class="text-2xl font-bold text-primary mr-2">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</span>
-                            <span class="text-md text-slate-400 line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-                        {% else %}
-                            <span class="text-2xl font-bold text-slate-800 mr-2">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-                        {% endif %}
-                    </div>
-                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
-                        <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition duration-300">
-                            Adicionar ao Carrinho
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+            {% include "_product_card.html" %}
         {% else %}
         <div class="col-span-full text-center py-12">
             <p class="text-slate-500 text-lg">Nenhum produto encontrado nesta categoria.</p>

@@ -4,6 +4,8 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 
 venv\Scripts\activate
 
+.\venv\Scripts\Activate.ps1
+
 Flask Shell :
 
 # Cole ou digite esta linha e pressione Enter

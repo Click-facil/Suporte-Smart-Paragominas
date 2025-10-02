@@ -1,0 +1,27 @@
+<article class="card product-card">
+  <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-media" aria-label="{{ product.name }}">
+    <img src="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png')) }}" alt="{{ product.name }}" loading="lazy" />
+  </a>
+  <div class="product-info">
+    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+      <div class="product-title">{{ product.name }}</div>
+    </a>
+    <div class="product-meta text-small">{{ product.category.name if product.category else '' }}</div>
+    <div class="mt-auto flex items-center justify-between">
+      {% if product.promo_price %}
+      <div>
+        <div class="product-price">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</div>
+        <div class="text-sm muted line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</div>
+      </div>
+      {% else %}
+      <div class="product-price">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</div>
+      {% endif %}
+      <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+        {% if csrf_token is defined %}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-sm">Adicionar</button>
+      </form>
+    </div>
+  </div>
+</article>

@@ -30,14 +30,14 @@
           theme: {
             extend: {
               colors: {
-                'primary': '#015da2',      // Seu azul principal
-                'primary-dark': '#014a81', // Tom mais escuro para hovers
-                'light': '#E6F0F6',        // Azul bem claro para fundos
-                'brand-blue': '#015da2',   // Azul da logo Suporte Smart
-                'accent': '#F97316',       // Laranja vibrante para destaque
-                'accent-dark': '#EA580C',  // Laranja mais escuro para hovers
-                'whatsapp': '#25D366',     // Verde do WhatsApp
-                'whatsapp-dark': '#128C7E',// Verde escuro para hover
+                'primary': '#015da2',
+                'primary-dark': '#014a81',
+                'light': '#E6F0F6',
+                'brand-blue': '#015da2',
+                'accent': '#F97316',
+                'accent-dark': '#EA580C',
+                'whatsapp': '#25D366',
+                'whatsapp-dark': '#128C7E',
               },
             },
           },
@@ -52,30 +52,125 @@
     <link rel="icon" href="{{ url_for('static', filename='images/logosemfundo.png') }}" type="image/png">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .card-shadow {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+        :root{
+            --bg: #E6F0F6;
+            --surface: #ffffff;
+            --muted: #6b7280;
+            --primary: #015da2;
+            --primary-600: #014a81;
+            --accent: #F97316;
+            --radius: 14px;
+            --card-shadow: 0 6px 18px rgba(2,6,23,0.06);
+            --card-shadow-strong: 0 12px 30px rgba(2,6,23,0.09);
         }
-        .card-shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-        }
+
+        /* Base */
         html {
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #0f172a;
+            -webkit-text-size-adjust: 100%;
+            margin: 0;
         }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+
+        /* Container helper */
+        .container { max-width: 1180px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+
+        /* Header refinements */
+        header { backdrop-filter: blur(6px); }
+        header a img { transition: transform .2s ease; }
+        header a img:hover { transform: translateY(-2px) scale(1.01); }
+
+        /* Generic card */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            transition: box-shadow .28s cubic-bezier(.2,.8,.2,1), transform .28s;
         }
-        .scroll-target {
-            scroll-margin-top: 5rem; /* 80px */
+        .card:hover { box-shadow: var(--card-shadow-strong); transform: translateY(-6px); }
+        .card-body { padding: 18px; }
+
+        /* Category card (round thumb + title) */
+        .category-card { display:flex; flex-direction:column; align-items:center; text-align:center; padding:22px 18px; gap:14px; }
+        .category-thumb-wrap {
+            width: 160px;
+            height: 160px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #fff, #f3f6fb);
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
+        .category-thumb { width:100%; height:100%; object-fit:cover; display:block; }
+        .category-title { font-weight:700; color: #0b2540; font-size:1.05rem; margin-top:6px; }
+
+        /* Product card improvements */
+        .product-card { display:flex; flex-direction:column; height:100%; }
+        .product-media {
+            position:relative;
+            width:100%;
+            padding-top:100%; /* square */
+            overflow:hidden;
+            border-top-left-radius:calc(var(--radius) - 4px);
+            border-top-right-radius:calc(var(--radius) - 4px);
+            background:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .product-media img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+        .product-info { padding:14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+        .product-title { font-weight:600; color:#071433; font-size:1rem; line-height:1.2; }
+        .product-price { color:var(--primary); font-weight:700; font-size:1.05rem; }
+        .product-meta { color:var(--muted); font-size:0.9rem; }
+
+        /* Buttons */
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; cursor:pointer; border:1px solid transparent; font-weight:600; }
+        .btn-primary { background:var(--primary); color:#fff; box-shadow:0 6px 18px rgba(1,93,162,0.12); }
+        .btn-outline { background:transparent; border-color:rgba(15,23,42,0.06); color:#0f172a; }
+        .btn-sm { padding:8px 10px; font-size:0.9rem; border-radius:8px; }
+
+        /* Inputs */
+        input[type="search"], .input {
+            background:#fff;
+            border:1px solid #e6eef7;
+            padding:10px 12px;
+            border-radius:10px;
+            outline:none;
+            transition:box-shadow .15s, border-color .15s;
+        }
+        input[type="search"]:focus, .input:focus { border-color: var(--primary); box-shadow: 0 6px 18px rgba(1,93,162,0.08); }
+
+        /* Footer */
+        footer { border-top-left-radius: 18px; border-top-right-radius: 18px; }
+
+        /* Utilities */
+        .muted { color:var(--muted); }
+        .text-small { font-size:0.92rem; color:var(--muted); }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .category-thumb-wrap { width:112px; height:112px; }
+            .category-title { font-size:1rem; }
+            .product-media { padding-top:100%; }
+        }
+        @media (min-width: 1024px) {
+            .category-thumb-wrap { width:160px; height:160px; }
+        }
+
+        /* Animation utility */
+        .fade-in { opacity:0; transform: translateY(12px); transition: opacity .45s ease, transform .45s ease; }
+        .fade-in.visible { opacity:1; transform: translateY(0); }
+
+        /* Keep existing scroll-target behavior */
+        .scroll-target { scroll-margin-top: 5rem; }
     </style>
 </head>
 <body class="bg-light">

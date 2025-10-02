@@ -1,74 +1,36 @@
 {% extends "layout.html" %}
 
-{% block title %}
-{{ product.name }} - Comprar em Paragominas
-{% endblock %}
+{% block title %}{{ product.name }} - Comprar em Paragominas{% endblock %}
 
 {% block seo_tags %}
     <meta name="description" content="Compre {{ product.name }} na Suporte Smart em Paragominas. {{ product.description|striptags|truncate(120, True) }}">
     <link rel="canonical" href="{{ url_for('product_detail', product_id=product.id, _external=True) }}">
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="product">
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:title" content="{{ product.name }} - Suporte Smart Paragominas">
     <meta property="og:description" content="{{ product.description|striptags|truncate(150, True) }}">
-    <meta property="og:image" content="{{ url_for('static', filename='product_pics/' ~ product.image_file, _external=True) }}">
-    <meta property="og:site_name" content="Suporte Smart Paragominas">
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ request.url }}">
-    <meta property="twitter:title" content="{{ product.name }} - Suporte Smart Paragominas">
-    <meta property="twitter:description" content="{{ product.description|striptags|truncate(150, True) }}">
-    <meta property="twitter:image" content="{{ url_for('static', filename='product_pics/' ~ product.image_file, _external=True) }}">
+    <meta property="og:image" content="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png'), _external=True) }}">
 {% endblock %}
-
-{% macro static_image(path, default) -%}
-  {{ url_for('static', filename=(path if path else default)) }}
-{%- endmacro %}
 
 {% block content %}
 <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
   <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
     <!-- coluna da galeria -->
     <div class="animate-on-scroll">
-
       {% set main_src = url_for('static', filename='product_pics/' + (product.image_file or 'default.png')) %}
-
-      <!-- imagem principal -->
-      <div class="mb-4 rounded-lg overflow-hidden card-shadow">
-        <img
-          id="main-image"
-          src="{{ main_src }}"
-          alt="Imagem principal de {{ product.name }} - Suporte Smart"
-          class="w-full h-auto object-cover transition-opacity duration-300 aspect-square"
-        >
+      <div class="card product-media mb-4 overflow-hidden">
+        <img id="main-image" src="{{ main_src }}" alt="Imagem principal de {{ product.name }} - Suporte Smart" class="w-full h-full object-cover">
       </div>
 
-      <!-- miniaturas -->
       {% if product.images %}
         <div class="grid grid-cols-4 sm:grid-cols-5 gap-2">
-
-          <!-- thumbnail principal -->
           <div>
-            <img
-              src="{{ main_src }}"
-              alt="Thumbnail de {{ product.name }} - Suporte Smart"
-              class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-blue-500"
-              onclick='changeImage("{{ main_src }}", this)'
-            >
+            <img src="{{ main_src }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-blue-500" onclick='changeImage("{{ main_src }}", this)'>
           </div>
-
-          <!-- thumbnails adicionais -->
           {% for image in product.images %}
             {% set thumb_src = url_for('static', filename='product_pics/' + image.image_filename) %}
             <div>
-              <img
-                src="{{ thumb_src }}"
-                alt="Thumbnail de {{ product.name }} - Suporte Smart"
-                class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-transparent hover:border-blue-500 transition-all"
-                onclick='changeImage("{{ thumb_src }}", this)'
-              >
+              <img src="{{ thumb_src }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-transparent hover:border-blue-500 transition-all" onclick='changeImage("{{ thumb_src }}", this)'>
             </div>
           {% endfor %}
         </div>
@@ -78,29 +40,19 @@
     <!-- coluna de detalhes -->
     <div class="animate-on-scroll" data-delay-index="1">
       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4">{{ product.name }}</h1>
-
-      <!-- preços -->
       <div class="flex items-baseline mb-6">
         {% if product.promo_price %}
-          <span class="text-3xl md:text-4xl font-bold text-primary mr-3">
-            R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}
-          </span>
-          <span class="text-lg md:text-xl text-slate-400 line-through">
-            R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}
-          </span>
+          <span class="text-3xl md:text-4xl font-bold text-primary mr-3">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</span>
+          <span class="text-lg md:text-xl text-slate-400 line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
         {% else %}
-          <span class="text-3xl md:text-4xl font-bold text-slate-800">
-            R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}
-          </span>
+          <span class="text-3xl md:text-4xl font-bold text-slate-800">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
         {% endif %}
       </div>
 
-      <!-- descrição -->
       <div class="mb-8 max-w-2xl">
         <p class="text-slate-600 leading-relaxed whitespace-pre-wrap">{{ product.description | safe }}</p>
       </div>
 
-      <!-- botões -->
       <div class="space-y-4 mt-8">
         <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
             <div class="flex items-center space-x-4 mb-6">
@@ -108,10 +60,7 @@
                 <input type="number" id="quantity" name="quantity" value="1" min="1" class="w-20 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <button
-              type="submit"
-              class="w-full bg-primary text-white font-bold py-4 rounded-lg text-lg hover:bg-primary-dark transition duration-300 flex items-center justify-center shadow-lg hover:shadow-xl"
-            >
+            <button type="submit" class="w-full btn btn-primary py-4 rounded-lg text-lg flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -119,12 +68,7 @@
             </button>
         </form>
 
-        <a
-          href="{{ back_url or url_for('home', _anchor='loja') }}"
-          class="block w-full text-center bg-gray-200 text-gray-800 font-bold py-4 rounded-lg text-lg hover:bg-gray-300 transition duration-300"
-        >
-          Voltar para a Loja
-        </a>
+        <a href="{{ back_url or url_for('home', _anchor='loja') }}" class="block w-full text-center bg-gray-200 text-gray-800 font-bold py-4 rounded-lg text-lg hover:bg-gray-300 transition duration-300">Voltar para a Loja</a>
       </div>
     </div>
   </div>
@@ -139,10 +83,7 @@ function changeImage(newSrc, clickedThumbnail) {
     mainImage.style.opacity = '1';
   }, 300);
   const thumbnails = document.querySelectorAll('.thumbnail-image');
-  thumbnails.forEach(thumb => {
-    thumb.classList.remove('border-blue-500');
-    thumb.classList.add('border-transparent');
-  });
+  thumbnails.forEach(thumb => { thumb.classList.remove('border-blue-500'); thumb.classList.add('border-transparent'); });
   clickedThumbnail.classList.remove('border-transparent');
   clickedThumbnail.classList.add('border-blue-500');
 }

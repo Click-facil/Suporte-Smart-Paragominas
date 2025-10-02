@@ -1,8 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}
-Celulares e Acessórios em Paragominas
-{% endblock %}
+{% block title %}Celulares e Acessórios em Paragominas{% endblock %}
 
 {% block content %}
 <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -15,7 +13,7 @@ Celulares e Acessórios em Paragominas
             <a href="#loja" class="bg-white text-primary-dark font-bold py-3 px-8 rounded-lg text-lg hover:bg-slate-100 transition duration-300">Ver Produtos</a>
         </div>
         <div class="md:w-1/2 flex justify-center">
-            <img src="static/images/logosemfundo.png" alt="Smartphone e acessórios em destaque na Suporte Smart Paragominas" class="rounded-lg transform md:rotate-6 transition duration-500 hover:rotate-0 hover:scale-105">
+            <img src="{{ url_for('static', filename='images/logosemfundo.png') }}" alt="Smartphone e acessórios em destaque na Suporte Smart Paragominas" class="rounded-lg transform md:rotate-6 transition duration-500 hover:rotate-0 hover:scale-105">
         </div>
     </section>
 
@@ -24,14 +22,7 @@ Celulares e Acessórios em Paragominas
         <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-10 animate-on-scroll">Navegue por Categorias</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-8">
             {% for category in all_categories %}
-            <a href="{{ url_for('category_page', category_id=category.id) }}" class="bg-white p-6 rounded-lg card-shadow text-center flex flex-col items-center justify-center animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
-                {# Tentaremos carregar imagens locais seguindo a convenção: static/category_pics/<category.id>.(png|jpg|jpeg).
-                   Se não existir, um script no final da página trocará para um fallback. #}
-                <div class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 mx-auto mb-4 rounded-full overflow-hidden flex items-center justify-center">
-                    <img data-category-id="{{ category.id }}" src="{{ url_for('static', filename='images/logo.png') }}" class="w-full h-full object-cover category-thumb" alt="Categoria {{ category.name }} na Suporte Smart">
-                </div>
-                <h3 class="text-lg font-semibold text-slate-800">{{ category.name }}</h3>
-            </a>
+                {% include "_category_card.html" %}
             {% else %}
             <p class="col-span-full text-center text-slate-500">Nenhuma categoria cadastrada.</p>
             {% endfor %}
@@ -44,39 +35,7 @@ Celulares e Acessórios em Paragominas
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {% for product in products %}
-            <div class="bg-white rounded-lg overflow-hidden card-shadow flex flex-col group animate-on-scroll border border-slate-200/80" data-delay-index="{{ loop.index0 }}">
-                <div class="relative overflow-hidden">
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
-                        <img src="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png')) }}" alt="{{ product.name }} - Suporte Smart Paragominas" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
-                    </a>
-                    {% if product.promo_price %}
-                    <div class="absolute top-3 right-3 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">PROMO</div>
-                    {% endif %}
-                </div>
-                
-                <div class="p-5 flex flex-col flex-grow">
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2 hover:text-primary transition-colors truncate">{{ product.name }}</h3>
-                    </a>
-                    <p class="text-slate-500 text-sm mb-4">{{ product.category.name }}</p>
-                    
-                    <div class="mt-auto space-y-3">
-                        <div class="flex items-baseline">
-                            {% if product.promo_price %}
-                                <span class="text-2xl font-bold text-primary mr-2">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</span>
-                                <span class="text-md text-slate-400 line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-                            {% else %}
-                                <span class="text-2xl font-bold text-slate-800 mr-2">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-                            {% endif %}
-                        </div>
-                        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
-                            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition duration-300">
-                                Adicionar ao Carrinho
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                {% include "_product_card.html" %}
             {% else %}
                 <p class="col-span-full text-center text-slate-500">Nenhum produto em destaque no momento.</p>
             {% endfor %}
@@ -91,7 +50,7 @@ Celulares e Acessórios em Paragominas
     <!-- SEÇÃO SOBRE NÓS -->
     <section id="sobre" class="bg-white rounded-lg border border-slate-200/80 p-8 md:p-12 flex flex-col md:flex-row items-center gap-12 mb-16 md:mb-20 animate-on-scroll scroll-target">
         <div class="md:w-1/2">
-            <img src="static/images/logo.png" alt="Foto da loja Suporte Smart Paragominas" class="rounded-lg shadow-lg w-full">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Foto da loja Suporte Smart Paragominas" class="rounded-lg shadow-lg w-full">
         </div>
         <div class="md:w-1/2">
             <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">Sua loja de confiança em Paragominas</h2>
@@ -108,28 +67,24 @@ Celulares e Acessórios em Paragominas
     <section id="faq" class="max-w-3xl mx-auto animate-on-scroll scroll-target">
         <h2 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-10">Perguntas Frequentes</h2>
         <div class="space-y-4">
-            <!-- Pergunta 1 -->
             <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
                 <summary class="font-semibold text-lg text-slate-800">Quais formas de pagamento vocês aceitam?</summary>
                 <p class="text-slate-600 mt-4">
                     Atualmente, as vendas são finalizadas via WhatsApp. Aceitamos PIX, cartões de débito e crédito. Entre em contato para mais detalhes.
                 </p>
             </details>
-            <!-- Pergunta 2 -->
             <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
                 <summary class="font-semibold text-lg text-slate-800">Os produtos tem garantia?</summary>
                 <p class="text-slate-600 mt-4">
                     Sim! Todos os nossos produtos possuem garantia de fábrica. Consulte os prazos específicos para cada produto.
                 </p>
             </details>
-            <!-- Pergunta 3 -->
             <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
                 <summary class="font-semibold text-lg text-slate-800">Como funciona a retirada?</summary>
                 <p class="text-slate-600 mt-4">
                     Você pode retirar seu produto diretamente em nossa loja física em Paragominas. A confirmação é feita diretamente pelo WhatsApp após a compra.
                 </p>
             </details>
-            <!-- Pergunta 4 -->
             <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
                 <summary class="font-semibold text-lg text-slate-800">Como funciona o boleto para negativado?</summary>
                 <p class="text-slate-600 mt-4">

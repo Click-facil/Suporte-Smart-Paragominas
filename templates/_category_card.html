@@ -1,0 +1,13 @@
+{# remapeamento local->public para as imagens (ajuste se necessário) #}
+{% set _cat_id_map = {2: 8, 3: 6, 5: 7} %}
+{% set public_cat_id = _cat_id_map.get(category.id, category.id) %}
+
+<a href="{{ url_for('category_page', category_id=category.id) }}" class="card category-card text-center p-4">
+  <div class="category-thumb-wrap">
+    <img class="category-thumb"
+         src="{{ url_for('static', filename='category_pics/' ~ public_cat_id ~ '.png') }}"
+         alt="{{ category.name }}"
+         loading="lazy">
+  </div>
+  <div class="category-title mt-3">{{ category.name }}</div>
+</a>
