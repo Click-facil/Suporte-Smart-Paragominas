@@ -54,21 +54,24 @@
       </div>
 
       <div class="space-y-4 mt-8">
-        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
-            <div class="flex items-center space-x-4 mb-6">
-                <label for="quantity" class="font-bold text-slate-700">Quantidade:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" class="w-20 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
+        <!-- formulário em linha: quantidade no canto esquerdo e botão ao lado -->
+        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form flex items-center justify-start gap-4">
+            <label for="quantity" class="font-bold text-slate-700">Quantidade:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" class="w-20 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
 
-            <button type="submit" class="w-full btn btn-primary py-4 rounded-lg text-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <button type="submit" class="btn btn-primary flex items-center gap-3 px-6 py-3 rounded-lg text-lg hover:bg-primary-dark transition duration-300">
+              <!-- ícone de carrinho restaurado -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               Adicionar ao Carrinho
             </button>
         </form>
 
-        <a href="{{ back_url or url_for('home', _anchor='loja') }}" class="block w-full text-center bg-gray-200 text-gray-800 font-bold py-4 rounded-lg text-lg hover:bg-gray-300 transition duration-300">Voltar para a Loja</a>
+        <!-- botão Voltar com o mesmo visual (mas full-width) -->
+        <a href="{{ back_url or url_for('home', _anchor='loja') }}" class="block w-full text-center bg-primary text-white font-bold py-4 rounded-lg text-lg hover:bg-primary-dark transition duration-300 mt-4">
+          Voltar para a Loja
+        </a>
       </div>
     </div>
   </div>

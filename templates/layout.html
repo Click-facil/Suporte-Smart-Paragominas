@@ -47,7 +47,11 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Inter para texto e Poppins para títulos (usado no index) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom site CSS (carregado APÓS o Tailwind para sobrescrever utilitários quando necessário) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
     
     <link rel="icon" href="{{ url_for('static', filename='images/logosemfundo.png') }}" type="image/png">
 
@@ -177,7 +181,7 @@
 
     <!-- CABEÇALHO -->
     <header class="bg-light shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3 flex justify-between items-center">
             <!-- Logo -->
             <a href="{{ url_for('home') }}" class="flex items-center">
                 <!-- ALTERAÇÕES AQUI -->
