@@ -36,3 +36,8 @@ $domain='https://www.suportesmartparagominas.com.br'
     Write-Host "id=$id -> $title"
   } catch { Write-Host "id=$id -> (não existe / erro)" }
 }
+
+git status
+git add -A
+git commit -m "Seu comentário"
+git push
