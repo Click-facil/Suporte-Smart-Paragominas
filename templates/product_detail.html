@@ -40,13 +40,8 @@
     <!-- coluna de detalhes -->
     <div class="animate-on-scroll" data-delay-index="1">
       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4">{{ product.name }}</h1>
-      <div class="flex items-baseline mb-6">
-        {% if product.promo_price %}
-          <span class="text-3xl md:text-4xl font-bold text-primary mr-3">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</span>
-          <span class="text-lg md:text-xl text-slate-400 line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-        {% else %}
-          <span class="text-3xl md:text-4xl font-bold text-slate-800">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</span>
-        {% endif %}
+      <div class="mb-6">
+        <span class="text-2xl font-bold text-primary">Consulte o preço</span>
       </div>
 
       <div class="mb-8 max-w-2xl">

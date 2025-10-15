@@ -34,7 +34,7 @@ Seu Carrinho de Compras
                     <img src="{{ url_for('static', filename='product_pics/' ~ item.image) }}" alt="Produto {{ item.name }} no carrinho" class="w-24 h-24 object-cover rounded-md mr-4">
                     <div class="flex-grow">
                         <h3 class="text-lg font-semibold text-slate-800">{{ item.name }}</h3>
-                        <p class="text-slate-500">R$ {{ "%.2f"|format(item.price)|replace('.', ',') }}</p>
+                        <p class="text-slate-500">Preço a combinar</p>
                         
                         <!-- Formulário de atualização de quantidade -->
                         <form action="{{ url_for('update_cart_item', product_id=product_id) }}" method="POST" class="flex items-center mt-2">
@@ -44,7 +44,7 @@ Seu Carrinho de Compras
                         </form>
                     </div>
                     <div class="text-right">
-                        <p class="font-bold text-slate-800">R$ {{ "%.2f"|format(item.price * item.quantity)|replace('.', ',') }}</p>
+                        <p class="font-bold text-slate-800">--</p>
                         <!-- Formulário para remover item -->
                         <form action="{{ url_for('remove_from_cart', product_id=product_id) }}" method="POST" class="mt-2">
                             <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold">Remover</button>
@@ -61,15 +61,15 @@ Seu Carrinho de Compras
                 <h2 class="text-xl font-bold text-slate-800 border-b pb-4 mb-4">Resumo do Pedido</h2>
                 <div class="flex justify-between mb-2 text-slate-600">
                     <span>Subtotal</span>
-                    <span id="cart-total">R$ {{ "%.2f"|format(total_price)|replace('.', ',') }}</span>
+                    <span id="cart-total">A combinar</span>
                 </div>
                 <div class="flex justify-between mb-4 text-slate-600">
                     <span>Frete</span>
                     <span>A combinar</span>
                 </div>
-                <div class="flex justify-between font-bold text-xl text-slate-800 border-t pt-4 mt-4">
+                <div class="flex justify-between font-bold text-lg text-slate-800 border-t pt-4 mt-4">
                     <span>Total</span>
-                    <span>R$ {{ "%.2f"|format(total_price)|replace('.', ',') }}</span>
+                    <span>A combinar no WhatsApp</span>
                 </div>
                 <button onclick="finalizarCompraWhatsApp()" class="mt-6 w-full bg-whatsapp text-white font-bold py-3 rounded-lg text-lg hover:bg-whatsapp-dark transition duration-300 flex items-center justify-center">
                     <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">

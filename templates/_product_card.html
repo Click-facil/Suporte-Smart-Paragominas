@@ -8,14 +8,7 @@
     </a>
     <div class="product-meta text-small">{{ product.category.name if product.category else '' }}</div>
     <div class="mt-auto flex items-center justify-between">
-      {% if product.promo_price %}
-      <div>
-        <div class="product-price">R$ {{ "%.2f"|format(product.promo_price or 0.0)|replace('.', ',') }}</div>
-        <div class="text-sm muted line-through">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</div>
-      </div>
-      {% else %}
-      <div class="product-price">R$ {{ "%.2f"|format(product.price or 0.0)|replace('.', ',') }}</div>
-      {% endif %}
+      <div class="product-price">Consulte o preço</div>
       <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
         {% if csrf_token is defined %}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
