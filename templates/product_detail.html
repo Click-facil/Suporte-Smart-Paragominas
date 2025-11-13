@@ -41,7 +41,13 @@
     <div class="animate-on-scroll" data-delay-index="1">
       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4">{{ product.name }}</h1>
       <div class="mb-6">
-        <span class="text-2xl font-bold text-primary">Consulte o preço</span>
+        {% if product.promo_price %}
+          <span class="text-2xl font-bold text-slate-400 line-through mr-3">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</span>
+          <span class="text-3xl font-bold text-accent">R$ {{ "%.2f"|format(product.promo_price)|replace('.', ',') }}</span>
+          <span class="ml-3 px-2 py-1 bg-accent/10 text-accent text-sm font-bold rounded">OFERTA</span>
+        {% else %}
+          <span class="text-3xl font-bold text-primary">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</span>
+        {% endif %}
       </div>
 
       <div class="mb-8 max-w-2xl">
