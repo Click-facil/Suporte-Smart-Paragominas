@@ -1,3 +1,6 @@
+import cloudinary
+import cloudinary.uploader
+import cloudinary.utils
 import os
 import secrets
 from dotenv import load_dotenv
@@ -17,6 +20,13 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
 app = Flask(__name__)
+
+# Configuração do Cloudinary
+cloudinary.config(
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+  api_key = os.environ.get('CLOUDINARY_API_KEY'),
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+)
 
 # --- CONFIGURAÇÃO ---
 # Usa variáveis de ambiente para segurança e flexibilidade
@@ -92,9 +102,30 @@ class ProductImage(db.Model):
 def inject_context():
     all_categories = Category.query.order_by(Category.name).all()
     cart = session.get('cart', {})
-    # Usamos .get('quantity', 0) para segurança caso a estrutura do item seja inesperada
     cart_item_count = sum(item.get('quantity', 0) for item in cart.values())
-    return dict(all_categories=all_categories, cart_item_count=cart_item_count)
+    
+    def get_image_url(public_id, **options):
+        """
+        Função helper para gerar URLs de imagem nos templates.
+        Ela lida com o placeholder e gera a URL do Cloudinary.
+        """
+        if not public_id or public_id == 'placeholder.png':
+            # Retorna a imagem local padrão
+            return url_for('static', filename='placeholder.png')
+        
+        # Define opções padrão se não forem passadas
+        options.setdefault('width', 400)
+        options.setdefault('height', 400)
+        options.setdefault('crop', 'limit')
+        
+        # Gera e retorna a URL segura do Cloudinary
+        return cloudinary.utils.url(public_id, **options)
+
+    return dict(
+        all_categories=all_categories,
+        cart_item_count=cart_item_count,
+        get_image_url=get_image_url  # <-- INJETAMOS A FUNÇÃO AQUI
+    )
 
 
 # --- FORMULÁRIOS ---
@@ -145,28 +176,46 @@ class CategoryForm(FlaskForm):
 
 # --- FUNÇÃO HELPER PARA SALVAR IMAGENS ---
 def save_picture(form_picture):
+    """
+    Faz o upload da imagem para o Cloudinary e retorna o Public ID.
+    O Public ID é o que salvaremos no banco de dados.
+    """
+    # Cria um nome de arquivo único para usar como Public ID
     random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/product_pics', picture_fn)
-    output_size = (800, 800)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-    return picture_fn
+    
+    try:
+        # Faz o upload, definindo nosso 'random_hex' como o ID público
+        upload_result = cloudinary.uploader.upload(
+            form_picture,
+            public_id=random_hex,
+            overwrite=True,
+            # Redimensiona a imagem no upload para economizar espaço
+            transformation=[
+                {'width': 800, 'height': 800, 'crop': 'limit'}
+            ]
+        )
+        # Retorna o Public ID (ex: "abcdef1234")
+        return upload_result['public_id']
+        
+    except Exception as e:
+        print(f"Erro no upload para o Cloudinary: {e}")
+        # Em caso de falha, podemos querer não parar a app
+        # mas retornar None ou o placeholder
+        return None
 
-def delete_picture(filename):
-    """Apaga um arquivo de imagem da pasta static/product_pics."""
-    # Não apagar a imagem padrão
-    if filename and filename != 'placeholder.png':
+def delete_picture(public_id):
+    """
+    Apaga uma imagem do Cloudinary usando seu Public ID.
+    O 'public_id' é o que está salvo no banco de dados (ex: "abcdef1234").
+    """
+    # Não apagar a imagem padrão (que é local)
+    if public_id and public_id != 'placeholder.png':
         try:
-            picture_path = os.path.join(app.root_path, 'static/product_pics', filename)
-            if os.path.exists(picture_path):
-                os.remove(picture_path)
+            # Envia o comando de destruição (delete) para o Cloudinary
+            cloudinary.uploader.destroy(public_id)
         except Exception as e:
             # Em um app de produção, seria bom logar este erro
-            print(f"Erro ao apagar a imagem {filename}: {e}")
-
+            print(f"Erro ao apagar a imagem {public_id} do Cloudinary: {e}")
 
 # --- ROTAS DO SITE PÚBLICO ---
 @app.route('/')
@@ -383,7 +432,8 @@ def edit_product(product_id):
         flash('Produto atualizado com sucesso!', 'success')
         return redirect(url_for('admin_dashboard'))
     
-    image_file = url_for('static', filename='product_pics/' + product.image_file)
+    # Gera a URL segura do Cloudinary a partir do Public ID salvo no banco
+    image_file = cloudinary.utils.url(product.image_file, width=800, height=800, crop="limit")
     return render_template('add_edit_product.html', title='Editar Produto', form=form, product=product, image_file=image_file)
 
 # ROTA APAGAR PRODUTO
