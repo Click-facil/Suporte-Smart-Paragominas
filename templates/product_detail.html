@@ -9,7 +9,7 @@
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:title" content="{{ product.name }} - Suporte Smart Paragominas">
     <meta property="og:description" content="{{ product.description|striptags|truncate(150, True) }}">
-    <meta property="og:image" content="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png'), _external=True) }}">
+    <meta property="og:image" content="{{ get_image_url(product.image_file, width=800, height=800) }}">
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
     <!-- coluna da galeria -->
     <div class="animate-on-scroll">
-      {% set main_src = url_for('static', filename='product_pics/' + (product.image_file or 'default.png')) %}
+      {% set main_src = get_image_url(product.image_file, width=800, height=800) %}
       <div class="card product-media mb-4 overflow-hidden">
         <img id="main-image" src="{{ main_src }}" alt="Imagem principal de {{ product.name }} - Suporte Smart" class="w-full h-full object-cover">
       </div>
@@ -25,12 +25,12 @@
       {% if product.images %}
         <div class="grid grid-cols-4 sm:grid-cols-5 gap-2">
           <div>
-            <img src="{{ main_src }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-blue-500" onclick='changeImage("{{ main_src }}", this)'>
+            <img src="{{ get_image_url(product.image_file, width=100, height=100, crop='fill') }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-blue-500" onclick='changeImage("{{ main_src }}", this)'>
           </div>
           {% for image in product.images %}
-            {% set thumb_src = url_for('static', filename='product_pics/' + image.image_filename) %}
+            {% set thumb_src = get_image_url(image.image_filename, width=100, height=100, crop='fill') %}
             <div>
-              <img src="{{ thumb_src }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-transparent hover:border-blue-500 transition-all" onclick='changeImage("{{ thumb_src }}", this)'>
+              <img src="{{ thumb_src }}" alt="Thumbnail de {{ product.name }} - Suporte Smart" class="thumbnail-image w-full h-24 object-cover cursor-pointer rounded-md border-2 border-transparent hover:border-blue-500 transition-all" onclick='changeImage("{{ get_image_url(image.image_filename, width=800, height=800) }}", this)'>
             </div>
           {% endfor %}
         </div>
