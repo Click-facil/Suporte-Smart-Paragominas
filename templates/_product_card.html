@@ -1,6 +1,6 @@
 <article class="card product-card">
   <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-media" aria-label="{{ product.name }}">
-    <img src="{{ url_for('static', filename='product_pics/' ~ (product.image_file or 'default.png')) }}" alt="{{ product.name }}" loading="lazy" />
+    <img src="{{ get_image_url(product.image_file, width=400, height=400) }}" alt="{{ product.name }}" loading="lazy" />
   </a>
   <div class="product-info">
     <a href="{{ url_for('product_detail', product_id=product.id) }}">
