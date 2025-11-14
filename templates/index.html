@@ -4,25 +4,40 @@
 
 {% block content %}
 <main>
-    <section class="bg-primary">
-    <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-        <div class="mr-auto place-self-center lg:col-span-7">
-            <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white">A tecnologia que você precisa, na palma da sua mão</h1>
-            <p class="max-w-2xl mb-6 font-light text-light/80 lg:mb-8 md:text-lg lg:text-xl">Explore o universo completo do seu celular: smartphones, smartwatches e todos os acessórios essenciais, bem aqui em Paragominas.</p>
-            <a href="https://wa.me/5591991171818" target="_blank" class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white border border-white/50 rounded-lg hover:bg-white/10 focus:ring-4 focus:ring-white/20 transition-colors">
-                Tire suas dúvidas
-                <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            </a>
-            <a href="{{ url_for('loja') }}" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white border border-white/50 rounded-lg hover:bg-white/10 focus:ring-4 focus:ring-white/20 transition-colors">
-                Ver Produtos
-            </a> 
+    <!-- Início do Carrossel de Banners -->
+    <section class="carousel-container" aria-label="Promoções de Black Friday">
+        <div class="carousel-track">
+            <!-- Slide 1 -->
+            <div class="slide active">
+                <img src="{{ url_for('static', filename='images/Banner_Black_Friday_1.png') }}" alt="Banner Black Friday - Ofertas Imperdíveis">
+                <div class="slide-content">
+                    <h2 class="slide-title">Black Friday Chegou!</h2>
+                    <p class="slide-description">As melhores ofertas do ano em um só lugar.</p>
+                    <a href="{{ url_for('loja') }}" class="cta-button">Confira as Ofertas</a>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="slide">
+                <img src="{{ url_for('static', filename='images/bannerblackfriday2.png') }}" alt="Banner Black Friday - Acessórios com Desconto">
+                <div class="slide-content">
+                    <h2 class="slide-title">Acessórios em Promoção</h2>
+                    <p class="slide-description">Turbine seus dispositivos com descontos exclusivos.</p>
+                    <a href="{{ url_for('loja') }}" class="cta-button">Ver Acessórios</a>
+                </div>
+            </div>
         </div>
-        <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-            <img src="static/images/banner2.png" alt="mockup">
-        </div>                
-    </div>
-</section>
-    </div>
+
+        <!-- Controles de Navegação -->
+        <button class="carousel-button prev" aria-label="Slide anterior">&#10094;</button>
+        <button class="carousel-button next" aria-label="Próximo slide">&#10095;</button>
+
+        <!-- Indicadores de Posição -->
+        <div class="carousel-indicators">
+            <button class="indicator active" aria-label="Ir para o slide 1"></button>
+            <button class="indicator" aria-label="Ir para o slide 2"></button>
+        </div>
+    </section>
+    <!-- Fim do Carrossel de Banners -->
 
     <section id="categorias" class="relative bg-brand-blue pt-20 pb-32 text-white scroll-target">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -70,31 +85,89 @@
         </div>
     </section>
 
+    <!-- Seção Mais Vendidos (Layout de E-commerce) -->
+    <section id="loja" class="py-16 md:py-20 scroll-target">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-12" style="font-family: 'Poppins', sans-serif;">Mais Vendidos</h2>
+        </div>
+        <div class="products-grid-full-width">
+            {% for product in products %}
+                {% include "_product_card.html" %}
+            {% else %}
+                <p class="text-center text-slate-500">Nenhum produto em destaque no momento.</p>
+            {% endfor %}
+        </div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center mt-12 animate-on-scroll">
+            <a href="{{ url_for('loja') }}" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
+        </div>
+    </section>
+
+    <!-- Seção do Banner Intermediário -->
+    <section class="my-16 md:my-20 animate-on-scroll container mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ url_for('loja') }}" class="block rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <img src="{{ url_for('static', filename='images/bannerblackfriday4.png') }}" alt="Banner promocional Black Friday" class="w-full h-auto object-cover">
+        </a>
+    </section>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- O restante do conteúdo que deve ficar centralizado, como o FAQ, iria aqui -->
+    </div>
+
+    <!-- Nova Seção Sobre (estilo card) -->
+    <section id="sobre" class="about-section scroll-target">
+        <div class="about-image-container">
+            <img src="{{ url_for('static', filename='images/frenteloja.jpg') }}" alt="Frente da loja Suporte Smart em Paragominas">
+        </div>
+        <div class="about-content-container">
+            <div class="about-content">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-5" style="font-family: 'Poppins', sans-serif;">Sua loja de confiança em Paragominas</h2>
+                <p class="text-slate-600 mb-4 text-lg">A Suporte Smart é mais do que uma loja de celulares. Somos uma franquia dedicada a oferecer os melhores produtos e o suporte técnico mais qualificado da região, conectando você com a tecnologia de ponta.</p>
+                <p class="text-slate-600 mb-8 text-lg">Venha nos conhecer e descubra por que somos a escolha número um para quem busca qualidade, variedade e confiança.</p>
+                <a href="https://maps.app.goo.gl/yY4Y3oX7gQ6Z9Z9aA" target="_blank" class="cta-button-secondary">Ver no Mapa</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Diferenciais -->
+    <section id="diferenciais" class="differentiators-section relative">
+        <!-- Divisor de forma no topo -->
+        <div class="absolute top-0 left-0 w-full overflow-hidden leading-none" style="transform: rotate(180deg);">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-[60px]" fill="#E6F0F6"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path></svg>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-16" style="font-family: 'Poppins', sans-serif;">Por que escolher a Suporte Smart?</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                <!-- Diferencial 1 -->
+                <div class="differentiator-item animate-on-scroll">
+                    <div class="differentiator-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 21z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mt-5 mb-2">Cartão de Crédito</h3>
+                    <p class="text-slate-600">Parcele em até 18x Sem Juros.</p>
+                </div>
+                <!-- Diferencial 2 -->
+                <div class="differentiator-item animate-on-scroll" style="animation-delay: 100ms;">
+                    <div class="differentiator-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mt-5 mb-2">Compra 100% Segura</h3>
+                    <p class="text-slate-600">Seus dados protegidos do início ao fim.</p>
+                </div>
+                <!-- Diferencial 3 -->
+                <div class="differentiator-item animate-on-scroll" style="animation-delay: 200ms;">
+                    <div class="differentiator-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h2.64m-13.5 0L12 14.25 16.5 21m-13.5 0L12 14.25m9-11.25h.008v.008H21V9.75m-13.5 0h.008v.008H7.5V9.75m13.5 0h-3.375a.75.75 0 00-.75.75V15m-3.375 0H7.5m9-11.25h-3.375a.75.75 0 00-.75.75V15m-6.625 0H2.36" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mt-5 mb-2">Loja Física em Paragominas</h3>
+                    <p class="text-slate-600">Venha nos visitar e conhecer nossos produtos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <section id="loja" class="mb-16 md:mb-20 scroll-target">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-12" style="font-family: 'Poppins', sans-serif;">Produtos em Destaque</h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 products-grid">
-                {% for product in products %}
-                    {% include "_product_card.html" %}
-                {% else %}
-                    <p class="col-span-full text-center text-slate-500">Nenhum produto em destaque no momento.</p>
-                {% endfor %}
-            </div>
-
-            <div class="text-center mt-12 animate-on-scroll">
-                <a href="{{ url_for('loja') }}" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
-            </div>
-        </section>
-
-            <div class="md:w-1/2">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4" style="font-family: 'Poppins', sans-serif;">Sua loja de confiança em Paragominas</h2>
-                <p class="text-slate-600 mb-4 text-lg">A Suporte Smart é mais do que uma loja de celulares. Somos uma franquia dedicada a oferecer os melhores produtos e o suporte técnico mais qualificado da região. Nossa missão em Paragominas é conectar você com a tecnologia de ponta, oferecendo um atendimento personalizado e a garantia que você merece.</p>
-                <p class="text-slate-600 text-lg">Venha nos conhecer e descubra por que somos a escolha número um para quem busca qualidade, variedade e confiança.</p>
-            </div>
-        </section>
-
-        <section id="faq" class="max-w-3xl mx-auto animate-on-scroll scroll-target">
+        <section id="faq" class="max-w-3xl mx-auto animate-on-scroll scroll-target mt-16 md:mt-20">
             <h2 class="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-10" style="font-family: 'Poppins', sans-serif;">Perguntas Frequentes</h2>
             <div class="space-y-4">
                 <details class="bg-white p-6 rounded-lg shadow-sm cursor-pointer">
@@ -116,5 +189,9 @@
             </div>
         </section>
     </div>
+
 </main>
+
+<!-- Script do Carrossel -->
+<script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
 {% endblock %}

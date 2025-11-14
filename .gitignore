@@ -21,3 +21,13 @@ produtos_exportados.csv
 
 # Arquivo de anotações
 txt
+
+# Arquivos de banco de dados local
+instance/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Imagens de produtos carregadas pelos usuários (não devem ser versionadas)
+static/product_pics/

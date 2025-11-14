@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, jsonify
 from datetime import datetime, timedelta
+from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 # Novo import para upload múltiplo
@@ -220,8 +221,8 @@ def delete_picture(public_id):
 # --- ROTAS DO SITE PÚBLICO ---
 @app.route('/')
 def home():
-    products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
-    return render_template('index.html', products=products)
+    bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
+    return render_template('index.html', products=bestseller_products)
 
 @app.route('/loja')
 def loja():
