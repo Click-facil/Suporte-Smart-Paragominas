@@ -31,7 +31,7 @@ Seu Carrinho de Compras
             <ul class="divide-y divide-gray-200">
                 {% for product_id, item in cart.items() %}
                 <li class="py-4 flex items-center cart-item" data-name="{{ item.name }}" data-quantity="{{ item.quantity }}">
-                    <img src="{{ url_for('static', filename='product_pics/' ~ item.image) }}" alt="Produto {{ item.name }} no carrinho" class="w-24 h-24 object-cover rounded-md mr-4">
+                    <img src="{{ get_image_url(item.image, width=100, height=100, crop='fill') }}" alt="Produto {{ item.name }} no carrinho" class="w-24 h-24 object-cover rounded-md mr-4">
                     <div class="flex-grow">
                         <h3 class="text-lg font-semibold text-slate-800">{{ item.name }}</h3>
                         <p class="text-slate-500">Preço a combinar</p>
