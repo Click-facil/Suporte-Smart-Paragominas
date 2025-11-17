@@ -41,7 +41,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {% for image in product.images %}
                 <div class="relative group">
-                    <img src="{{ url_for('static', filename='product_pics/' + image.image_filename) }}" class="w-full h-32 object-cover rounded-lg">
+                    <img src="{{ get_image_url(image.image_filename, width=150, height=150, crop='fill') }}" class="w-full h-32 object-cover rounded-lg">
                     <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
                         <form action="{{ url_for('delete_image', image_id=image.id) }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja apagar esta imagem?');">
                             <button type="submit" class="text-white bg-red-600 hover:bg-red-700 rounded-full p-2">
