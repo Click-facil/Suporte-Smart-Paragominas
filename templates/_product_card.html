@@ -7,11 +7,11 @@
       <div class="product-title">{{ product.name }}</div>
     </a>
     <div class="product-meta text-small">{{ product.category.name if product.category else '' }}</div>
-    <div class="mt-auto flex items-center justify-between">
+    <div class="product-actions">
       <div class="product-price">
         {% if product.promo_price %}
           <span class="text-slate-400 line-through text-sm mr-2">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</span>
-          <span class="text-accent">R$ {{ "%.2f"|format(product.promo_price)|replace('.', ',') }}</span>
+          <span class="text-primary">R$ {{ "%.2f"|format(product.promo_price)|replace('.', ',') }}</span>
         {% else %}
           R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}
         {% endif %}
