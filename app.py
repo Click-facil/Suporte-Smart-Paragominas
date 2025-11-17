@@ -392,6 +392,7 @@ def add_product():
     """Adiciona um novo produto ao banco de dados."""
     form = ProductForm()
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
+    
     if form.validate_on_submit():
         new_product = Product(
             name=form.name.data,
@@ -401,15 +402,22 @@ def add_product():
             is_featured=form.is_featured.data,
             category_id=form.category.data
         )
+        
+        # Lógica de upload segura
         if form.picture.data:
-            new_product.image_file = save_picture(form.picture.data)
+            new_image_id = save_picture(form.picture.data)
+            if new_image_id:
+                new_product.image_file = new_image_id
+            else:
+                # Se o upload falhar, ele usa o 'default' (placeholder.png) e avisa
+                flash('Houve um erro no upload da imagem. O produto foi salvo com a imagem padrão.', 'danger')
         
         db.session.add(new_product)
         db.session.commit()
         flash('Produto adicionado! Agora pode adicionar mais imagens na galeria.', 'success')
         return redirect(url_for('manage_gallery', product_id=new_product.id))
+        
     return render_template('add_edit_product.html', title='Adicionar Novo Produto', form=form)
-
 # ROTA EDITAR PRODUTO
 @app.route('/admin/produto/editar/<int:product_id>', methods=['GET', 'POST'])
 @login_required
@@ -418,17 +426,27 @@ def edit_product(product_id):
     product = db.get_or_404(Product, product_id)
     form = ProductForm(obj=product)
     form.category.choices = [(c.id, c.name) for c in Category.query.order_by('name').all()]
+    
     if form.validate_on_submit():
-        old_image = product.image_file
+        # Lógica de upload segura
         if form.picture.data:
-            delete_picture(old_image)
-            product.image_file = save_picture(form.picture.data)
+            new_image_id = save_picture(form.picture.data)
+            if new_image_id:
+                # Se o upload deu CERTO, apaga a antiga e define a nova
+                delete_picture(product.image_file)
+                product.image_file = new_image_id
+            else:
+                # Se o upload FALHOU, avisa o usuário e NÃO muda a imagem
+                flash('Houve um erro no upload da imagem. O produto foi salvo, mas a imagem antiga foi mantida.', 'danger')
+        
+        # Atualiza os outros dados normalmente
         product.name = form.name.data
         product.description = form.description.data
         product.price = form.price.data
         product.promo_price = form.promo_price.data if form.promo_price.data else None
         product.is_featured = form.is_featured.data
         product.category_id = form.category.data
+        
         db.session.commit()
         flash('Produto atualizado com sucesso!', 'success')
         return redirect(url_for('admin_dashboard'))
@@ -463,17 +481,28 @@ def manage_gallery(product_id):
     """Página para gerir a galeria de imagens de um produto."""
     product = db.get_or_404(Product, product_id)
     form = ImageUploadForm()
+    
     if form.validate_on_submit():
+        imagens_salvas = 0
+        imagens_falhadas = 0
         for pic in form.pictures.data:
             filename = save_picture(pic)
-            new_image = ProductImage(image_filename=filename, product_id=product.id)
-            db.session.add(new_image)
-        db.session.commit()
-        flash('Imagens adicionadas à galeria com sucesso!', 'success')
+            if filename:
+                new_image = ProductImage(image_filename=filename, product_id=product.id)
+                db.session.add(new_image)
+                imagens_salvas += 1
+            else:
+                imagens_falhadas += 1
+        
+        if imagens_salvas > 0:
+            db.session.commit()
+            flash(f'{imagens_salvas} imagens adicionadas com sucesso!', 'success')
+        if imagens_falhadas > 0:
+            flash(f'Falha ao salvar {imagens_falhadas} imagens. Verifique as credenciais do Cloudinary.', 'danger')
+            
         return redirect(url_for('manage_gallery', product_id=product.id))
     
     return render_template('manage_gallery.html', title='Gerir Galeria', product=product, form=form)
-
 # NOVA ROTA: APAGAR IMAGEM DA GALERIA
 @app.route('/admin/imagem/apagar/<int:image_id>', methods=['POST'])
 @login_required
