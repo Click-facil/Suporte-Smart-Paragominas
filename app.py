@@ -120,7 +120,7 @@ def inject_context():
         options.setdefault('crop', 'limit')
         
         # Gera e retorna a URL segura do Cloudinary
-        return cloudinary.utils.cloudinary_url(public_id, **options)
+        return cloudinary.utils.cloudinary_url(public_id, **options)[0]
 
     return dict(
         all_categories=all_categories,
@@ -452,7 +452,7 @@ def edit_product(product_id):
         return redirect(url_for('admin_dashboard'))
     
     # Gera a URL segura do Cloudinary a partir do Public ID salvo no banco
-    image_file = cloudinary.utils.cloudinary_url(product.image_file, width=800, height=800, crop="limit")
+    image_file = cloudinary.utils.cloudinary_url(product.image_file, width=800, height=800, crop="limit")[0]
     return render_template('add_edit_product.html', title='Editar Produto', form=form, product=product, image_file=image_file)
 
 # ROTA APAGAR PRODUTO
