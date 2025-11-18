@@ -228,11 +228,6 @@
     100% { opacity: 0; }
 }
 
-
-/* A classe .active não é mais necessária para visibilidade neste modelo,
-   mas é usada pelo JS e pelos indicadores. */
-.slide.active {}
-
 .slide img {
     width: 100%;
     height: 100%;
