@@ -194,17 +194,19 @@
 
 /* --- Estilos do Carrossel de Banners --- */
 
+/* --- Correção do Carrossel --- */
 .carousel-container {
     position: relative;
     width: 100%;
-    height: 100vh; /* Ocupa a altura total da tela */
+    height: 100vh; /* Ocupa a tela toda */
     overflow: hidden;
-    background-color: #000; /* Fundo para o carregamento da imagem */
+    background-color: #000;
 }
 
 .carousel-track {
     position: relative;
     height: 100%;
+    width: 100%;
 }
 
 .slide {
@@ -213,32 +215,35 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    animation: carousel-fade 14s infinite; /* 2 slides * 7s = 14s */
+    opacity: 0; /* Começa invisível */
+    z-index: 1;
+    /* Animação padrão para todos */
+    animation: carousel-fade 14s infinite; 
+}
+
+/* O primeiro slide DEVE ser visível e ter a animação sincronizada */
+.slide:nth-child(1) {
+    opacity: 1; /* Garante visibilidade inicial */
+    z-index: 2; /* Fica acima */
+    animation-delay: 0s;
 }
 
 .slide:nth-child(2) {
-    animation-delay: 7s; /* Inicia a animação do segundo slide após 7s */
+    animation-delay: 7s; /* Espera metade do tempo */
 }
 
 @keyframes carousel-fade {
-    0% { opacity: 0; }
-    7% { opacity: 1; } /* Fade in (1s de 14s) */
-    50% { opacity: 1; } /* Fica visível (6s de 14s) */
-    57% { opacity: 0; } /* Fade out (1s de 14s) */
-    100% { opacity: 0; }
+    0% { opacity: 1; z-index: 2; }
+    45% { opacity: 1; z-index: 2; }
+    50% { opacity: 0; z-index: 1; }
+    95% { opacity: 0; z-index: 1; }
+    100% { opacity: 1; z-index: 2; }
 }
-
-
-/* A classe .active não é mais necessária para visibilidade neste modelo,
-   mas é usada pelo JS e pelos indicadores. */
-.slide.active {}
 
 .slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
-    object-position: center;
+    object-fit: cover;
 }
 
 /* Conteúdo sobreposto (título, texto e botão) */
