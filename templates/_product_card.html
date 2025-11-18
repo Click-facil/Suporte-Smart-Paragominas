@@ -1,27 +1,26 @@
-<article class="card product-card">
-  <a href="{{ url_for('product_page', product_id=product.id) }}" class="product-media" aria-label="{{ product.name }}">
-    <img src="{{ get_image_url(product.image_file, width=400, height=400) }}" alt="{{ product.name }}" loading="lazy" />
-  </a>
-  <div class="product-info">
-    <a href="{{ url_for('product_page', product_id=product.id) }}">
-      <div class="product-title">{{ product.name }}</div>
+<article class="product-card-v2 group">
+    <a href="{{ url_for('product_page', product_id=product.id) }}" class="product-card-v2__media">
+        <img src="{{ get_image_url(product.image_file, width=400, height=400) }}" alt="{{ product.name }}" loading="lazy" />
     </a>
-    <div class="product-meta text-small">{{ product.category.name if product.category else '' }}</div>
-    <div class="product-actions">
-      <div class="product-price">
-        {% if product.promo_price %}
-          <span class="text-slate-400 line-through text-sm mr-2">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</span>
-          <span class="text-primary">R$ {{ "%.2f"|format(product.promo_price)|replace('.', ',') }}</span>
-        {% else %}
-          R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}
-        {% endif %}
-      </div>
-      <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
-        {% if csrf_token is defined %}
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        {% endif %}
-        <button type="submit" class="btn btn-primary btn-sm">Adicionar</button>
-      </form>
+    <div class="product-card-v2__info">
+        <a href="{{ url_for('product_page', product_id=product.id) }}" class="product-card-v2__title-link">
+            <h3 class="product-card-v2__title">{{ product.name }}</h3>
+        </a>
+        <div class="product-card-v2__price-section">
+            {% if product.promo_price and product.promo_price < product.price %}
+                <p class="product-card-v2__original-price">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</p>
+                <p class="product-card-v2__price">R$ {{ "%.2f"|format(product.promo_price)|replace('.', ',') }}</p>
+            {% else %}
+                <p class="product-card-v2__price">R$ {{ "%.2f"|format(product.price)|replace('.', ',') }}</p>
+            {% endif %}
+        </div>
+        <div class="product-card-v2__actions">
+            <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="product-card-v2__add-btn" aria-label="Adicionar ao carrinho">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </button>
+            </form>
+        </div>
     </div>
-  </div>
 </article>

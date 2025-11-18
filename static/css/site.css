@@ -1,6 +1,7 @@
 /* Estilos específicos para cards de produto (carregado após o Tailwind) */
 
 :root{
+    --price-color: #00a650; /* Verde para preços */
     --primary: #015DA2;
     --primary-700: #014A81;
     --accent: #F97316; /* Laranja para destaque */
@@ -28,6 +29,99 @@
     max-width: 1600px; /* Largura máxima para a grade */
     margin: 0 auto;
 }
+
+/* --- V2 Product Card --- */
+.product-card-v2 {
+    background: #fff;
+    border-radius: var(--card-radius);
+    border: 1px solid #eef2f5;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card-v2:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-shadow-hover);
+}
+.product-card-v2__media {
+    display: block;
+    background-color: #fff;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+.product-card-v2__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.75rem;
+    transition: transform 0.4s ease;
+}
+.product-card-v2:hover .product-card-v2__media img {
+    transform: scale(1.05);
+}
+.product-card-v2__info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.product-card-v2__title-link {
+    text-decoration: none;
+    color: inherit;
+}
+.product-card-v2__title {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    /* Limita o título a 2 linhas */
+    height: 2.66em; /* 1.4 * 0.95rem * 2 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.5rem;
+}
+.product-card-v2__price-section {
+    margin-top: auto; /* Empurra para o final */
+    padding-top: 0.5rem;
+}
+.product-card-v2__original-price {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+.product-card-v2__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--price-color);
+    line-height: 1;
+}
+.product-card-v2__actions {
+    margin-top: 0.75rem;
+}
+.product-card-v2__add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.6rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    background-color: transparent;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.product-card-v2__add-btn:hover {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: #fff;
+}
+/* --- Fim V2 Product Card --- */
 
 /* Card base (mantém compatibilidade com .card .product-card existentes) */
 .card.product-card {

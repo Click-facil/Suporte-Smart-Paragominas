@@ -153,14 +153,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Lógica para selecionar cor
-    const swatches = document.querySelectorAll('.color-swatch');
-    swatches.forEach((swatch, index) => {
-        if (index === 0) swatch.classList.add('active'); // Ativa a primeira cor por padrão
+    const colorMap = {
+        'preto': '#000000',
+        'branco': '#FFFFFF',
+        'cinza': '#808080',
+        'cinza espacial': '#5f5f5f',
+        'prata': '#C0C0C0',
+        'dourado': '#FFD700',
+        'gold': '#FFD700',
+        'rosa': '#FFC0CB',
+        'rose': '#E0BFB8',
+        'vermelho': '#FF0000',
+        'azul': '#0000FF',
+        'azul-sierra': '#A9BCD0',
+        'azul pacífico': '#1E455A',
+        'verde': '#008000',
+        'verde-alpino': '#516453',
+        'verde-meia-noite': '#004953',
+        'roxo': '#800080',
+        'roxo-profundo': '#513B56',
+        'amarelo': '#FFFF00',
+        'laranja': '#FFA500',
+        'titânio natural': '#8A847B',
+        'titânio azul': '#2E3A4B',
+        'titânio branco': '#F5F5F7',
+        'titânio preto': '#424245',
+    };
+
+    document.querySelectorAll('.color-swatch').forEach((swatch, index) => {
+        const colorName = swatch.getAttribute('title').toLowerCase().trim();
+        const hexColor = colorMap[colorName] || '#cccccc'; // Usa cinza se não encontrar
+
+        swatch.style.backgroundColor = hexColor;
+        // Adiciona uma borda para cores muito claras como o branco
+        if (hexColor.toUpperCase() === '#FFFFFF') {
+            swatch.style.borderColor = '#d1d5db';
+        }
+
+        if (index === 0) swatch.classList.add('active');
         swatch.addEventListener('click', () => {
-            swatches.forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
-            // Aqui você pode adicionar lógica para, por exemplo,
-            // guardar a cor selecionada em um input hidden para o carrinho.
         });
     });
 });
