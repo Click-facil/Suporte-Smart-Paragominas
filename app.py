@@ -15,6 +15,7 @@ from flask_wtf.file import FileField, FileAllowed, MultipleFileField
 from wtforms import StringField, TextAreaField, DecimalField, SubmitField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError, Optional
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
@@ -58,6 +59,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db) # Conecta o Flask-Migrate à aplicação
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -91,6 +93,9 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     # Relação com a nova tabela de imagens
     images = db.relationship('ProductImage', backref='product', lazy=True, cascade="all, delete-orphan")
+    # NOVOS CAMPOS PARA A PÁGINA DE PRODUTO
+    installment_info = db.Column(db.String(100), nullable=True) # Ex: "12x de R$ 99,90"
+    colors = db.Column(db.String(200), nullable=True) # Ex: "Preto,Branco,Azul"
 
 # NOVA TABELA PARA A GALERIA DE IMAGENS
 class ProductImage(db.Model):
@@ -138,6 +143,9 @@ class ProductForm(FlaskForm):
     # Este campo agora só atualiza a imagem principal
     picture = FileField('Atualizar Imagem Principal', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     category = SelectField('Categoria', coerce=int, validators=[DataRequired()])
+    # NOVOS CAMPOS NO FORMULÁRIO
+    installment_info = StringField('Informação de Parcelamento (Ex: 12x de R$ 99,90)')
+    colors = StringField('Cores Disponíveis (separadas por vírgula)')
     is_featured = BooleanField('Marcar como Destaque')
     submit = SubmitField('Salvar Produto')
 
@@ -235,21 +243,26 @@ def category_page(category_id):
     return render_template('loja.html', products=category.products, title=f"Categoria: {category.name}", category=category)
 
 @app.route('/produto/<int:product_id>')
-def product_detail(product_id):
+def product_page(product_id):
     # .get_or_404 é a melhor forma de buscar: ele retorna o produto
     # ou mostra uma página de erro 404 (Não Encontrado) automaticamente.
     product = Product.query.get_or_404(product_id)
+
+    # Prepara a lista de cores para o template, se houver
+    color_list = []
+    if product.colors:
+        color_list = [color.strip() for color in product.colors.split(',')]
 
     # Lógica para o botão "Voltar" inteligente
     referrer = request.referrer
     # Define um URL de retorno padrão para a seção de loja na página inicial
     back_url = url_for('home', _anchor='loja')
 
-    # Se o usuário veio da página da loja ou de uma categoria, usamos esse URL de referência
+    # Se o usuário veio da página da loja ou de uma categoria, usamos esse URL de referência para o botão "Voltar"
     if referrer and ('/loja' in referrer or '/categoria/' in referrer):
         back_url = referrer
 
-    return render_template("product_detail.html", title=product.name, product=product, back_url=back_url)
+    return render_template("product_page.html", title=product.name, product=product, back_url=back_url, color_list=color_list)
 
 @app.route('/sitemap.xml')
 def sitemap():
@@ -268,7 +281,7 @@ def sitemap():
     # Páginas de produtos
     products = Product.query.all()
     for product in products:
-        pages.append({'loc': f"{base_url}/produto/{product.id}", 'lastmod': last_mod})
+        pages.append({'loc': f"{base_url}{url_for('product_page', product_id=product.id)}", 'lastmod': last_mod})
 
     # Páginas de categorias
     categories = Category.query.all()
@@ -400,7 +413,9 @@ def add_product():
             price=form.price.data,
             promo_price=form.promo_price.data if form.promo_price.data else None,
             is_featured=form.is_featured.data,
-            category_id=form.category.data
+            category_id=form.category.data,
+            installment_info=form.installment_info.data,
+            colors=form.colors.data
         )
         
         # Lógica de upload segura
@@ -446,6 +461,8 @@ def edit_product(product_id):
         product.promo_price = form.promo_price.data if form.promo_price.data else None
         product.is_featured = form.is_featured.data
         product.category_id = form.category.data
+        product.installment_info = form.installment_info.data
+        product.colors = form.colors.data
         
         db.session.commit()
         flash('Produto atualizado com sucesso!', 'success')
