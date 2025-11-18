@@ -1,9 +1,9 @@
 <article class="card product-card">
-  <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-media" aria-label="{{ product.name }}">
+  <a href="{{ url_for('product_page', product_id=product.id) }}" class="product-media" aria-label="{{ product.name }}">
     <img src="{{ get_image_url(product.image_file, width=400, height=400) }}" alt="{{ product.name }}" loading="lazy" />
   </a>
   <div class="product-info">
-    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+    <a href="{{ url_for('product_page', product_id=product.id) }}">
       <div class="product-title">{{ product.name }}</div>
     </a>
     <div class="product-meta text-small">{{ product.category.name if product.category else '' }}</div>
