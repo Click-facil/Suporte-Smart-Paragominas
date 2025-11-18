@@ -27,15 +27,6 @@
             </div>
         </div>
 
-        <!-- Controles de Navegação -->
-        <button class="carousel-button prev" aria-label="Slide anterior">&#10094;</button>
-        <button class="carousel-button next" aria-label="Próximo slide">&#10095;</button>
-
-        <!-- Indicadores de Posição -->
-        <div class="carousel-indicators">
-            <button class="indicator active" aria-label="Ir para o slide 1"></button>
-            <button class="indicator" aria-label="Ir para o slide 2"></button>
-        </div>
     </section>
     <!-- Fim do Carrossel de Banners -->
 
@@ -103,9 +94,9 @@
     </section>
 
     <!-- Seção do Banner Intermediário -->
-    <section class="my-16 md:my-20 w-full animate-on-scroll">
-        <a href="{{ url_for('loja') }}" class="block">
-            <img src="{{ url_for('static', filename='images/bannerblackfriday4.png') }}" alt="Banner promocional Black Friday" class="w-full h-auto object-cover">
+    <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section">
+        <a href="{{ url_for('loja') }}" class="block h-full">
+            <img src="{{ url_for('static', filename='images/bannerblackfriday4.png') }}" alt="Banner promocional Black Friday" class="w-full h-full object-cover">
         </a>
     </section>
 
@@ -192,6 +183,5 @@
 
 </main>
 
-<!-- Script do Carrossel -->
-<script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
+<!-- O script do carrossel (carousel.js) não é mais necessário para a animação de fade via CSS. -->
 {% endblock %}
