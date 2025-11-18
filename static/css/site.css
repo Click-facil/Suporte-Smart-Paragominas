@@ -193,17 +193,19 @@
 
 /* --- Estilos do Carrossel de Banners --- */
 
+/* --- Correção do Carrossel --- */
 .carousel-container {
     position: relative;
     width: 100%;
-    height: 100vh; /* Ocupa a altura total da tela */
+    height: 100vh; /* Ocupa a tela toda */
     overflow: hidden;
-    background-color: #000; /* Fundo para o carregamento da imagem */
+    background-color: #000;
 }
 
 .carousel-track {
     position: relative;
     height: 100%;
+    width: 100%;
 }
 
 .slide {
@@ -212,27 +214,35 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    animation: carousel-fade 14s infinite; /* 2 slides * 7s = 14s */
+    opacity: 0; /* Começa invisível */
+    z-index: 1;
+    /* Animação padrão para todos */
+    animation: carousel-fade 14s infinite; 
+}
+
+/* O primeiro slide DEVE ser visível e ter a animação sincronizada */
+.slide:nth-child(1) {
+    opacity: 1; /* Garante visibilidade inicial */
+    z-index: 2; /* Fica acima */
+    animation-delay: 0s;
 }
 
 .slide:nth-child(2) {
-    animation-delay: 7s; /* Inicia a animação do segundo slide após 7s */
+    animation-delay: 7s; /* Espera metade do tempo */
 }
 
 @keyframes carousel-fade {
-    0% { opacity: 0; }
-    7% { opacity: 1; } /* Fade in (1s de 14s) */
-    50% { opacity: 1; } /* Fica visível (6s de 14s) */
-    57% { opacity: 0; } /* Fade out (1s de 14s) */
-    100% { opacity: 0; }
+    0% { opacity: 1; z-index: 2; }
+    45% { opacity: 1; z-index: 2; }
+    50% { opacity: 0; z-index: 1; }
+    95% { opacity: 0; z-index: 1; }
+    100% { opacity: 1; z-index: 2; }
 }
 
 .slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
-    object-position: center;
+    object-fit: cover;
 }
 
 /* Conteúdo sobreposto (título, texto e botão) */
@@ -431,4 +441,74 @@
 }
 .differentiator-item:hover .differentiator-icon svg {
     transform: scale(1.1);
+}
+
+/* COLE NO FINAL DO SEU ARQUIVO static/css/site.css */
+
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Ou a altura que preferir */
+    overflow: hidden;
+    background-color: #000;
+}
+
+.carousel-track {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1;
+    animation: carousel-fade 14s infinite;
+}
+
+/* O primeiro slide aparece imediatamente */
+.slide:nth-child(1) {
+    opacity: 1;
+    z-index: 2;
+    animation-delay: 0s;
+}
+
+/* O segundo slide espera metade do tempo */
+.slide:nth-child(2) {
+    animation-delay: 7s;
+}
+
+@keyframes carousel-fade {
+    0% { opacity: 1; z-index: 2; }
+    45% { opacity: 1; z-index: 2; }
+    50% { opacity: 0; z-index: 1; }
+    95% { opacity: 0; z-index: 1; }
+    100% { opacity: 1; z-index: 2; }
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Estilos do texto do banner (Slide Content) */
+.slide-content {
+    position: absolute;
+    bottom: 10%;
+    left: 8%;
+    z-index: 10;
+    color: #fff;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    max-width: 600px;
+}
+.slide-title { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+.slide-description { font-size: 1.5rem; margin-bottom: 1.5rem; }
+.cta-button { 
+    background-color: #ffc107; color: #000; padding: 12px 24px; 
+    border-radius: 5px; font-weight: bold; text-decoration: none; 
 }
