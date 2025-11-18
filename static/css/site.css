@@ -524,3 +524,22 @@
 .differentiator-item:hover .differentiator-icon svg {
     transform: scale(1.1);
 }
+
+/* --- Estilos para Seções de Recomendação de Produto --- */
+.product-recommendation-section {
+    padding: 3rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+.product-recommendation-section__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+/* Ajuste para a grade de produtos dentro da seção de recomendação */
+.product-recommendation-section .products-grid-full-width {
+    padding: 0; /* Remove o padding extra pois a seção já tem */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Cards um pouco menores */
+}

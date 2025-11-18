@@ -120,6 +120,30 @@
             </div>
             {% endif %}
         </div>
+
+        <!-- Seção "Quem comprou, levou também" -->
+        {% if cross_sell_products %}
+        <section class="product-recommendation-section">
+            <h2 class="product-recommendation-section__title">Quem comprou, levou também</h2>
+            <div class="products-grid-full-width">
+                {% for product in cross_sell_products %}
+                    {% include "_product_card.html" %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Seção "Produtos Semelhantes" -->
+        {% if similar_products %}
+        <section class="product-recommendation-section">
+            <h2 class="product-recommendation-section__title">Produtos Semelhantes</h2>
+            <div class="products-grid-full-width">
+                {% for product in similar_products %}
+                    {% include "_product_card.html" %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
     </div>
 </main>
 

@@ -262,7 +262,41 @@ def product_page(product_id):
     if referrer and ('/loja' in referrer or '/categoria/' in referrer):
         back_url = referrer
 
-    return render_template("product_page.html", title=product.name, product=product, back_url=back_url, color_list=color_list)
+    # --- Lógica para Produtos Relacionados e Cross-sell ---
+
+    # 1. Produtos Semelhantes (da mesma categoria)
+    similar_products = Product.query.filter(
+        Product.category_id == product.category_id,
+        Product.id != product.id  # Exclui o próprio produto
+    ).order_by(func.random()).limit(4).all()
+
+    # 2. Cross-sell ("Quem comprou, levou também")
+    cross_sell_products = []
+    # Mapeamento de categorias para sugestões
+    cross_sell_map = {
+        'celulares': ['capas', 'películas', 'carregadores', 'fones de ouvido'],
+        'smartwatches': ['pulseiras', 'películas', 'carregadores'],
+        'fones de ouvido': ['carregadores'],
+        'capas': ['películas', 'cabos'],
+    }
+    
+    # Pega o nome da categoria atual em minúsculas
+    current_category_name = product.category.name.lower()
+
+    # Verifica se a categoria atual tem sugestões no mapa
+    for key in cross_sell_map:
+        if key in current_category_name:
+            # Pega os nomes das categorias sugeridas
+            suggested_category_names = cross_sell_map[key]
+            # Busca os produtos nessas categorias
+            cross_sell_products = Product.query.join(Category).filter(
+                func.lower(Category.name).in_(suggested_category_names)
+            ).order_by(func.random()).limit(4).all()
+            break # Para a busca assim que encontrar a primeira correspondência
+
+    return render_template("product_page.html", title=product.name, product=product, back_url=back_url, color_list=color_list,
+                           similar_products=similar_products,
+                           cross_sell_products=cross_sell_products)
 
 @app.route('/sitemap.xml')
 def sitemap():
