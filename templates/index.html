@@ -86,20 +86,23 @@
     </section>
     
 
-    <!-- Seção do Banner Intermediário -->
-    <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section">
+    <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section relative z-10">
+        
+        {# 1. Lógica para definir o link do banner #}
+        {% set banner_link = url_for('loja') %} {# Link padrão #}
+        
         {% for category in all_categories %}
-            {% if 'caixa' in category.name|lower or 'som' in category.name|lower or 'audio' in category.name|lower or 'áudio' in category.name|lower %}
-                <a href="{{ url_for('category_page', category_id=category.id) }}" class="block h-full">
-            {% else %}
-                {% if loop.last %}
-                    <a href="{{ url_for('loja') }}" class="block h-full">
-                {% endif %}
+            {% if 'caixa' in category.name|lower or 'som' in category.name|lower or 'audio' in category.name|lower %}
+                {# Se achar categoria de som, atualiza o link (dependendo da config do jinja, isso pode precisar de namespace, mas vamos tentar o simples primeiro) #}
+                {% set banner_link = url_for('category_page', category_id=category.id) %}
             {% endif %}
-        {% else %}
-            <a href="{{ url_for('loja') }}" class="block h-full">
         {% endfor %}
-            <img src="{{ url_for('static', filename='images/bannerequipamentosaudiocomlogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
+
+        {# 2. Estrutura HTML Limpa e Garantida #}
+        <a href="{{ banner_link }}" class="block h-full w-full">
+            <img src="{{ url_for('static', filename='images/bannerequipamentosaudiocomlogo.png') }}" 
+                 alt="Banner Equipamentos de Áudio" 
+                 class="w-full h-full object-cover shadow-sm">
         </a>
     </section>
 
