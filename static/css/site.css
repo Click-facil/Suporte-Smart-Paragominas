@@ -389,7 +389,18 @@
 /* --- Responsividade para Celulares --- */
 @media (max-width: 768px) {
     .carousel-container {
-        height: 70vh; /* Altura um pouco menor para celular */
+        height: auto; /* Altura automática para celular */
+        min-height: 50vh;
+        background-color: #fff; /* Fundo branco no mobile */
+    }
+    .slide {
+        position: static;
+        height: auto;
+        opacity: 1;
+        animation: none;
+    }
+    .slide:nth-child(2) {
+        display: none;
     }
     .slide-content {
         left: 0;
