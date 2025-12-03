@@ -9,15 +9,21 @@
         <div class="carousel-track">
             <!-- Slide 1 -->
             <div class="slide active">
-                <a href="https://www.suportesmartparagominas.com.br/categoria/1" class="block w-full h-full">
-                    <img src="{{ url_for('static', filename='images/Banner Smartwatches Sofisticado.png') }}" alt="Banner Smartwatches Sofisticados" class="w-full h-full object-cover">
-                </a>
+                <img src="{{ url_for('static', filename='images/Banner Smartwatches Sofisticado.png') }}" alt="Banner Smartwatches Sofisticados">
+                <div class="slide-content">
+                    <h2 class="slide-title mobile-hidden">Smartwatches Sofisticados</h2>
+                    <p class="slide-description mobile-hidden">Tecnologia avançada no seu pulso.</p>
+                    <a href="{{ url_for('loja') }}" class="cta-button">Ver Smartwatches</a>
+                </div>
             </div>
             <!-- Slide 2 -->
             <div class="slide">
-                <a href="https://www.suportesmartparagominas.com.br/loja" class="block w-full h-full">
-                    <img src="{{ url_for('static', filename='images/Banner Suporte Smart.png') }}" alt="Banner Suporte Smart Paragominas" class="w-full h-full object-cover">
-                </a>
+                <img src="{{ url_for('static', filename='images/Banner Suporte Smart.png') }}" alt="Banner Suporte Smart Paragominas">
+                <div class="slide-content">
+                    <h2 class="slide-title mobile-hidden">Suporte Smart Paragominas</h2>
+                    <p class="slide-description mobile-hidden">Sua loja de confiança em tecnologia.</p>
+                    <a href="{{ url_for('loja') }}" class="cta-button">Conheça Nossa Loja</a>
+                </div>
             </div>
         </div>
 
@@ -83,15 +89,25 @@
             {% endfor %}
         </div>
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center mt-12 animate-on-scroll">
-            <a href="https://www.suportesmartparagominas.com.br/loja" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
-        </div>
+            <a href="{{ url_for('loja') }}" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
+        </div>ask 
     </section>
     
 
     <!-- Seção do Banner Intermediário -->
     <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section">
-        <a href="https://www.suportesmartparagominas.com.br/categoria/10" class="block h-full">
-            <img src="{{ url_for('static', filename='images/BannerEquipamentosÁudiocomLogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
+        {% for category in all_categories %}
+            {% if 'caixa' in category.name|lower or 'som' in category.name|lower or 'audio' in category.name|lower or 'áudio' in category.name|lower %}
+                <a href="{{ url_for('category_page', category_id=category.id) }}" class="block h-full">
+            {% else %}
+                {% if loop.last %}
+                    <a href="{{ url_for('loja') }}" class="block h-full">
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <a href="{{ url_for('loja') }}" class="block h-full">
+        {% endfor %}
+            <img src="{{ url_for('static', filename='images/BannerEquipamentósÁudiocomLogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
         </a>
     </section>
 
