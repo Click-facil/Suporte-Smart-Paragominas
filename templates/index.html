@@ -5,25 +5,19 @@
 {% block content %}
 <main>
     <!-- Início do Carrossel de Banners -->
-    <section class="carousel-container" aria-label="Promoções de Black Friday">
+    <section class="carousel-container" aria-label="Promoções Suporte Smart">
         <div class="carousel-track">
             <!-- Slide 1 -->
             <div class="slide active">
-                <img src="{{ url_for('static', filename='images/Banner_Black_Friday_1.png') }}" alt="Banner Black Friday - Ofertas Imperdíveis">
-                <div class="slide-content">
-                    <h2 class="slide-title">Black Friday Chegou!</h2>
-                    <p class="slide-description">As melhores ofertas do ano em um só lugar.</p>
-                    <a href="{{ url_for('loja') }}" class="cta-button">Confira as Ofertas</a>
-                </div>
+                <a href="https://www.suportesmartparagominas.com.br/categoria/1" class="block w-full h-full">
+                    <img src="{{ url_for('static', filename='images/Banner Smartwatches Sofisticado.png') }}" alt="Banner Smartwatches Sofisticados" class="w-full h-full object-cover">
+                </a>
             </div>
             <!-- Slide 2 -->
             <div class="slide">
-                <img src="{{ url_for('static', filename='images/bannerblackfriday2.png') }}" alt="Banner Black Friday - Acessórios com Desconto">
-                <div class="slide-content">
-                    <h2 class="slide-title">Acessórios em Promoção</h2>
-                    <p class="slide-description">Turbine seus dispositivos com descontos exclusivos.</p>
-                    <a href="{{ url_for('loja') }}" class="cta-button">Ver Acessórios</a>
-                </div>
+                <a href="https://www.suportesmartparagominas.com.br/loja" class="block w-full h-full">
+                    <img src="{{ url_for('static', filename='images/Banner Suporte Smart.png') }}" alt="Banner Suporte Smart Paragominas" class="w-full h-full object-cover">
+                </a>
             </div>
         </div>
 
@@ -89,14 +83,15 @@
             {% endfor %}
         </div>
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center mt-12 animate-on-scroll">
-            <a href="{{ url_for('loja') }}" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
+            <a href="https://www.suportesmartparagominas.com.br/loja" class="bg-primary text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-primary-dark transition duration-300">Ver todos os produtos</a>
         </div>
     </section>
+    
 
     <!-- Seção do Banner Intermediário -->
     <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section">
-        <a href="{{ url_for('loja') }}" class="block h-full">
-            <img src="{{ url_for('static', filename='images/bannerblackfriday4.png') }}" alt="Banner promocional Black Friday" class="w-full h-full object-cover">
+        <a href="https://www.suportesmartparagominas.com.br/categoria/10" class="block h-full">
+            <img src="{{ url_for('static', filename='images/BannerEquipamentosÁudiocomLogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
         </a>
     </section>
 
