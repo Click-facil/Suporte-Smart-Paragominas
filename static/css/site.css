@@ -291,6 +291,7 @@
     height: 100vh; /* Ocupa a altura total da tela */
     overflow: hidden;
     background-color: #000; /* Fundo para o carregamento da imagem */
+    z-index: 1;
 }
 
 .carousel-track {
