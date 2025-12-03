@@ -10,20 +10,12 @@
             <!-- Slide 1 -->
             <div class="slide active">
                 <img src="{{ url_for('static', filename='images/Banner Smartwatches Sofisticado.png') }}" alt="Banner Smartwatches Sofisticados">
-                <div class="slide-content">
-                    <h2 class="slide-title mobile-hidden">Smartwatches Sofisticados</h2>
-                    <p class="slide-description mobile-hidden">Tecnologia avançada no seu pulso.</p>
-                    <a href="{{ url_for('loja') }}" class="cta-button">Ver Smartwatches</a>
-                </div>
+
             </div>
             <!-- Slide 2 -->
             <div class="slide">
                 <img src="{{ url_for('static', filename='images/Banner Suporte Smart.png') }}" alt="Banner Suporte Smart Paragominas">
-                <div class="slide-content">
-                    <h2 class="slide-title mobile-hidden">Suporte Smart Paragominas</h2>
-                    <p class="slide-description mobile-hidden">Sua loja de confiança em tecnologia.</p>
-                    <a href="{{ url_for('loja') }}" class="cta-button">Conheça Nossa Loja</a>
-                </div>
+
             </div>
         </div>
 
@@ -107,7 +99,7 @@
         {% else %}
             <a href="{{ url_for('loja') }}" class="block h-full">
         {% endfor %}
-            <img src="{{ url_for('static', filename='images/BannerEquipamentósÁudiocomLogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
+            <img src="{{ url_for('static', filename='images/bannerequipamentosaudiocomlogo.png') }}" alt="Banner Equipamentos de Áudio" class="w-full h-full object-cover">
         </a>
     </section>
 
