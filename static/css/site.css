@@ -436,7 +436,8 @@
 /* --- Responsividade para o Banner Intermediário --- */
 @media (max-width: 768px) {
     .intermediate-banner-section {
-        height: 50vh; /* Altura um pouco menor para celular */
+        height: auto; /* Altura automática para celular */
+        min-height: auto;
     }
 }
 
