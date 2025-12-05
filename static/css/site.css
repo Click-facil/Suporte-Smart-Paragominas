@@ -495,7 +495,10 @@
         grid-template-columns: 1fr; /* Coluna única */
     }
     .about-image-container {
-        height: 300px; /* Altura fixa para a imagem no mobile */
+        height: auto; /* Altura automática para a imagem no mobile */
+    }
+    .about-image-container img {
+        object-fit: contain; /* Mantém a imagem completa no mobile */
     }
     .about-content-container { padding: 3rem 2rem; }
 }
