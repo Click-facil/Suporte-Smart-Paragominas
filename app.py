@@ -96,6 +96,7 @@ class Product(db.Model):
     # NOVOS CAMPOS PARA A PÁGINA DE PRODUTO
     installment_info = db.Column(db.String(100), nullable=True) # Ex: "12x de R$ 99,90"
     colors = db.Column(db.String(200), nullable=True) # Ex: "Preto,Branco,Azul"
+    models = db.Column(db.String(1000), nullable=True) # Ex: "iPhone 13,iPhone 14 Pro"
 
 # NOVA TABELA PARA A GALERIA DE IMAGENS
 class ProductImage(db.Model):
@@ -146,6 +147,7 @@ class ProductForm(FlaskForm):
     # NOVOS CAMPOS NO FORMULÁRIO
     installment_info = StringField('Informação de Parcelamento (Ex: 12x de R$ 99,90)')
     colors = StringField('Cores Disponíveis (separadas por vírgula)')
+    models = StringField('Modelos Disponíveis (separados por vírgula)')
     is_featured = BooleanField('Marcar como Destaque')
     submit = SubmitField('Salvar Produto')
 
@@ -252,6 +254,11 @@ def product_page(product_id):
     color_list = []
     if product.colors:
         color_list = [color.strip() for color in product.colors.split(',')]
+    
+    # Prepara a lista de modelos para o template, se houver
+    model_list = []
+    if product.models:
+        model_list = [model.strip() for model in product.models.split(',')]
 
     # Lógica para o botão "Voltar" inteligente
     referrer = request.referrer
@@ -294,7 +301,7 @@ def product_page(product_id):
             ).order_by(func.random()).limit(4).all()
             break # Para a busca assim que encontrar a primeira correspondência
 
-    return render_template("product_page.html", title=product.name, product=product, back_url=back_url, color_list=color_list,
+    return render_template("product_page.html", title=product.name, product=product, back_url=back_url, color_list=color_list, model_list=model_list,
                            similar_products=similar_products,
                            cross_sell_products=cross_sell_products)
 
@@ -349,16 +356,34 @@ def add_to_cart(product_id):
     except (ValueError, TypeError):
         quantity = 1
 
-    product_id_str = str(product_id)
+    # Captura modelo e cor selecionados
+    selected_color = request.form.get('selected_color', '').strip()
+    selected_model = request.form.get('selected_model', '').strip()
+    
+    # Cria uma chave única para o produto com suas variações
+    product_key = f"{product_id}"
+    if selected_model:
+        product_key += f"_model_{selected_model}"
+    if selected_color:
+        product_key += f"_color_{selected_color}"
+    
+    # Monta o nome do produto com as variações
+    product_name = product.name
+    if selected_model:
+        product_name += f" - {selected_model}"
+    if selected_color:
+        product_name += f" - {selected_color}"
 
-    if product_id_str in cart:
-        cart[product_id_str]['quantity'] += quantity
+    if product_key in cart:
+        cart[product_key]['quantity'] += quantity
     else:
-        cart[product_id_str] = {
+        cart[product_key] = {
             'quantity': quantity,
-            'name': product.name,
+            'name': product_name,
             'price': float(product.promo_price if product.promo_price else product.price),
-            'image': product.image_file
+            'image': product.image_file,
+            'color': selected_color,
+            'model': selected_model
         }
     
     session['cart'] = cart
@@ -369,7 +394,7 @@ def add_to_cart(product_id):
 
     # Retorna uma resposta JSON para ser processada pelo JavaScript no front-end
     return jsonify(success=True, 
-                   message=f'"{product.name}" foi adicionado ao seu carrinho!', 
+                   message=f'"{product_name}" foi adicionado ao seu carrinho!', 
                    cart_item_count=cart_item_count)
 
 @app.route('/carrinho')
@@ -449,7 +474,8 @@ def add_product():
             is_featured=form.is_featured.data,
             category_id=form.category.data,
             installment_info=form.installment_info.data,
-            colors=form.colors.data
+            colors=form.colors.data,
+            models=form.models.data
         )
         
         # Lógica de upload segura
@@ -497,6 +523,7 @@ def edit_product(product_id):
         product.category_id = form.category.data
         product.installment_info = form.installment_info.data
         product.colors = form.colors.data
+        product.models = form.models.data
         
         db.session.commit()
         flash('Produto atualizado com sucesso!', 'success')

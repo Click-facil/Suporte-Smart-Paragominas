@@ -86,26 +86,17 @@
     </section>
     
 
-    <section class="my-16 md:my-20 w-full animate-on-scroll intermediate-banner-section relative z-10">
-        
-        {# 1. Lógica para definir o link do banner #}
-        {% set banner_link = url_for('loja') %} {# Link padrão #}
-        
-        {% for category in all_categories %}
-            {% if 'caixa' in category.name|lower or 'som' in category.name|lower or 'audio' in category.name|lower %}
-                {# Se achar categoria de som, atualiza o link (dependendo da config do jinja, isso pode precisar de namespace, mas vamos tentar o simples primeiro) #}
-                {% set banner_link = url_for('category_page', category_id=category.id) %}
-            {% endif %}
-        {% endfor %}
-
-        {# 2. Estrutura HTML Limpa e Garantida #}
-        <a href="{{ banner_link }}" class="block h-full w-full">
-            <img src="{{ url_for('static', filename='images/bannerequipamentosaudiocomlogo.png') }}" 
-                 alt="Banner Equipamentos de Áudio" 
-                 class="hidden md:block w-full h-full object-cover shadow-sm">
-            <img src="{{ url_for('static', filename='images/BannerÁudioCelular.png') }}" 
-                 alt="Banner Áudio Mobile" 
-                 class="block md:hidden w-full h-auto object-contain">
+    <!-- intermediate banner: usa <picture> para carregar só a imagem adequada -->
+    <section class="intermediate-banner-section animate-on-scroll relative z-10">
+        <a href="{{ banner_link }}" class="block w-full">
+            <picture>
+                <!-- Desktop: usado em >= md -->
+                <source media="(min-width: 768px)" srcset="{{ url_for('static', filename='images/bannerequipamentosaudiocomlogo.png') }}">
+                <!-- Mobile fallback (exibido em < md) -->
+                <img src="{{ url_for('static', filename='images/BannerÁudioCelular.png') }}"
+                     alt="Banner áudio"
+                     class="w-full h-auto object-cover md:object-contain secondary-banner-img">
+            </picture>
         </a>
     </section>
 

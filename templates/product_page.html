@@ -82,6 +82,18 @@
                             {% endif %}
                         </div>
 
+                        <!-- Seção de Variações de Modelo -->
+                        {% if model_list %}
+                        <div class="mb-6">
+                            <h3 class="text-base font-semibold text-slate-700 mb-2">Modelos:</h3>
+                            <div class="flex gap-2 flex-wrap">
+                                {% for model in model_list %}
+                                    <button type="button" class="model-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer" data-model="{{ model.strip() }}">{{ model.strip() }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <!-- Seção de Variações de Cor -->
                         {% if color_list %}
                         <div class="mb-6">
@@ -96,11 +108,13 @@
 
                         <!-- Botões de Ação -->
                         <div class="mt-auto space-y-3">
-                            <a href="https://api.whatsapp.com/send?phone=5591991171818&text=Olá! Tenho interesse no produto: {{ product.name|urlencode }}" target="_blank" class="w-full text-center bg-primary text-white font-bold py-3 px-6 rounded-md text-base hover:bg-primary-dark transition duration-300 flex items-center justify-center gap-2">
+                            <a id="whatsappBtn" href="https://api.whatsapp.com/send?phone=5591991171818&text=Olá! Tenho interesse no produto: {{ product.name|urlencode }}" target="_blank" class="w-full text-center bg-primary text-white font-bold py-3 px-6 rounded-md text-base hover:bg-primary-dark transition duration-300 flex items-center justify-center gap-2">
                                 Comprar Agora
                             </a>
                             <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
                                 <input type="hidden" name="quantity" value="1">
+                                <input type="hidden" name="selected_color" id="selectedColor" value="">
+                                <input type="hidden" name="selected_model" id="selectedModel" value="">
                                 <button type="submit" class="w-full text-center bg-primary/10 text-primary font-bold py-3 px-6 rounded-md text-base hover:bg-primary/20 transition duration-300">
                                     Adicionar ao Carrinho
                                 </button>
@@ -176,6 +190,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Variáveis para armazenar seleções
+    let selectedColor = '';
+    let selectedModel = '';
+
+    // Função para atualizar o link do WhatsApp
+    function updateWhatsAppLink() {
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const productName = '{{ product.name|urlencode }}';
+        let message = `Olá! Tenho interesse no produto: ${decodeURIComponent(productName)}`;
+        
+        if (selectedModel) {
+            message += ` - Modelo: ${selectedModel}`;
+        }
+        if (selectedColor) {
+            message += ` - Cor: ${selectedColor}`;
+        }
+        
+        whatsappBtn.href = `https://api.whatsapp.com/send?phone=5591991171818&text=${encodeURIComponent(message)}`;
+    }
+
+    // Lógica para selecionar modelo
+    document.querySelectorAll('.model-option').forEach((option, index) => {
+        if (index === 0) {
+            option.classList.add('border-primary', 'bg-primary/5');
+            selectedModel = option.getAttribute('data-model');
+            document.getElementById('selectedModel').value = selectedModel;
+        }
+        
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.model-option').forEach(o => {
+                o.classList.remove('border-primary', 'bg-primary/5');
+                o.classList.add('border-gray-300');
+            });
+            option.classList.remove('border-gray-300');
+            option.classList.add('border-primary', 'bg-primary/5');
+            selectedModel = option.getAttribute('data-model');
+            document.getElementById('selectedModel').value = selectedModel;
+            updateWhatsAppLink();
+        });
+    });
+
     // Lógica para selecionar cor
     const colorMap = {
         'preto': '#000000',
@@ -206,20 +261,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.color-swatch').forEach((swatch, index) => {
         const colorName = swatch.getAttribute('title').toLowerCase().trim();
-        const hexColor = colorMap[colorName] || '#cccccc'; // Usa cinza se não encontrar
+        const hexColor = colorMap[colorName] || '#cccccc';
 
         swatch.style.backgroundColor = hexColor;
-        // Adiciona uma borda para cores muito claras como o branco
         if (hexColor.toUpperCase() === '#FFFFFF') {
             swatch.style.borderColor = '#d1d5db';
         }
 
-        if (index === 0) swatch.classList.add('active');
+        if (index === 0) {
+            swatch.classList.add('active');
+            selectedColor = colorName;
+            document.getElementById('selectedColor').value = selectedColor;
+        }
+        
         swatch.addEventListener('click', () => {
             document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
             swatch.classList.add('active');
+            selectedColor = colorName;
+            document.getElementById('selectedColor').value = selectedColor;
+            updateWhatsAppLink();
         });
     });
+
+    // Atualiza o link inicial do WhatsApp
+    updateWhatsAppLink();
 });
 </script>
 {% endblock %}

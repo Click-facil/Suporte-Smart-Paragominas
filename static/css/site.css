@@ -426,18 +426,31 @@
     }
 }
 
-/* --- Estilos do Banner Intermediário --- */
+/* --- Estilos do Banner Intermediário (CORRIGIDO) --- */
 .intermediate-banner-section {
-    height: 70vh; /* Altura padrão */
-    max-height: 600px; /* Limita a altura máxima em telas muito grandes */
-    background-color: #000; /* Fundo para o carregamento da imagem */
+    width: 100%;
+    height: auto;       /* Deixa a imagem definir a altura */
+    min-height: auto;   /* Remove restrições mínimas */
+    background-color: transparent;
+    margin: 4rem 0;     /* Mantém o espaçamento vertical bonito (my-16) */
+    display: block;     /* Garante bloco padrão */
 }
 
-/* --- Responsividade para o Banner Intermediário --- */
+.intermediate-banner-section a {
+    display: block;     /* Remove espaços fantasmas abaixo da imagem */
+    width: 100%;
+}
+
+.intermediate-banner-section img {
+    display: block;
+    width: 100%;
+    height: auto;       /* O PULO DO GATO: Altura automática proporcional */
+}
+
+/* --- Responsividade (Não precisa forçar nada aqui mais) --- */
 @media (max-width: 768px) {
     .intermediate-banner-section {
-        height: auto; /* Altura automática para celular */
-        min-height: auto;
+        margin: 2rem 0; /* Espaçamento menor no celular */
     }
 }
 
