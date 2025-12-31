@@ -343,6 +343,28 @@ def robots_txt():
 def debug_route():
     return "<h1>Atualizacao do sitemap - Teste final.</h1>"
 
+# ROTA DE EMERGÊNCIA PARA INICIALIZAR BANCO
+@app.route('/init-database-emergency-2024')
+def init_database_emergency():
+    """Rota de emergência para inicializar o banco de dados"""
+    try:
+        # Criar tabelas
+        db.create_all()
+        
+        # Verificar se categorias existem
+        if Category.query.count() == 0:
+            categorias_basicas = ['Celulares', 'Smartwatches', 'Fones de Ouvido', 'Capas e Películas', 'Carregadores', 'Cabos']
+            for nome in categorias_basicas:
+                categoria = Category(name=nome)
+                db.session.add(categoria)
+            db.session.commit()
+            return f"<h1>✅ Banco inicializado! {len(categorias_basicas)} categorias criadas.</h1>"
+        else:
+            return f"<h1>✅ Banco já inicializado! {Category.query.count()} categorias encontradas.</h1>"
+            
+    except Exception as e:
+        return f"<h1>❌ Erro: {str(e)}</h1>"
+
 # --- ROTAS DO CARRINHO DE COMPRAS ---
 @app.route('/carrinho/adicionar/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
@@ -666,7 +688,35 @@ def delete_user(user_id):
 # --- COMANDO DE EMERGÊNCIA PARA O VERCEL ---
 # Isso força a criação das tabelas assim que o site liga no servidor
 with app.app_context():
-    db.create_all()
+    try:
+        # Tenta criar as tabelas
+        db.create_all()
+        
+        # Verifica se as tabelas foram criadas corretamente
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        
+        if 'category' not in tables:
+            print("⚠️ Tabela category não encontrada, forçando criação...")
+            db.create_all()
+        
+        # Criar categorias básicas se não existirem
+        if Category.query.count() == 0:
+            categorias_basicas = ['Celulares', 'Smartwatches', 'Fones de Ouvido', 'Capas e Películas', 'Carregadores', 'Cabos']
+            for nome in categorias_basicas:
+                categoria = Category(name=nome)
+                db.session.add(categoria)
+            db.session.commit()
+            print(f"✅ {len(categorias_basicas)} categorias básicas criadas")
+            
+    except Exception as e:
+        print(f"⚠️ Erro na inicialização: {e}")
+        # Em caso de erro, tenta criar as tabelas novamente
+        try:
+            db.create_all()
+        except:
+            pass
 # -------------------------------------------
 
 if __name__ == '__main__':

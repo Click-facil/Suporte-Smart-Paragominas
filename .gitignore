@@ -31,3 +31,14 @@ __pycache__/
 
 # Imagens de produtos carregadas pelos usuários (não devem ser versionadas)
 static/product_pics/
+
+# Scripts de backup e migração (não devem ir para o Git)
+criar_tabelas.py
+migracao_definitiva.py
+resgate_completo.py
+restaurar_backup.py
+init_db.py
+build.py
+backup_*.csv
+backup_*.json
+BACKUP_*.csv
