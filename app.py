@@ -663,5 +663,14 @@ def delete_user(user_id):
     flash(f'Usuário "{user_to_delete.username}" apagado com sucesso!', 'danger')
     return redirect(url_for('admin_users'))
 
+# --- COMANDO DE EMERGÊNCIA PARA O VERCEL ---
+# Isso força a criação das tabelas assim que o site liga no servidor
+with app.app_context():
+    db.create_all()
+# -------------------------------------------
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 if __name__ == '__main__':
     app.run(debug=True)
