@@ -107,7 +107,12 @@ class ProductImage(db.Model):
 # --- PROCESSADOR DE CONTEXTO ---
 @app.context_processor
 def inject_context():
-    all_categories = Category.query.order_by(Category.name).all()
+    try:
+        all_categories = Category.query.order_by(Category.name).all()
+    except:
+        # Se as tabelas não existem ainda, retorna lista vazia
+        all_categories = []
+    
     cart = session.get('cart', {})
     cart_item_count = sum(item.get('quantity', 0) for item in cart.values())
     
@@ -231,7 +236,11 @@ def delete_picture(public_id):
 # --- ROTAS DO SITE PÚBLICO ---
 @app.route('/')
 def home():
-    bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
+    try:
+        bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
+    except:
+        # Se as tabelas não existem, retorna lista vazia
+        bestseller_products = []
     return render_template('index.html', products=bestseller_products)
 
 @app.route('/loja')
