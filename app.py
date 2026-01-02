@@ -52,6 +52,10 @@ database_url = os.environ.get('DATABASE_URL', 'sqlite:///suportesmart.db')
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
+# Adiciona parâmetros SSL para Neon se for PostgreSQL
+if database_url.startswith("postgresql://") and "sslmode" not in database_url:
+    database_url += "?sslmode=require"
+
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -250,7 +254,6 @@ def home():
     try:
         bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
     except:
-        # Se as tabelas não existem, retorna lista vazia
         bestseller_products = []
     return render_template('index.html', products=bestseller_products)
 
