@@ -361,6 +361,10 @@ def sitemap():
 def robots_txt():
     return send_from_directory(app.static_folder, 'robots.txt')
 
+@app.route('/static/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
+
 # ROTA DE TESTE PARA DEBUG NO RENDER
 @app.route('/teste-debug-123')
 def debug_route():
