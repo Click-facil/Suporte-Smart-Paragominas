@@ -381,9 +381,17 @@ def init_database_emergency():
                 categoria = Category(name=nome)
                 db.session.add(categoria)
             db.session.commit()
-            return f"<h1>✅ Banco inicializado! {len(categorias_basicas)} categorias criadas.</h1>"
+        
+        # Criar usuário admin se não existir
+        admin_user = User.query.filter_by(username='admin').first()
+        if not admin_user:
+            senha_hash = bcrypt.generate_password_hash('admin123').decode('utf-8')
+            admin_user = User(username='admin', password=senha_hash)
+            db.session.add(admin_user)
+            db.session.commit()
+            return f"<h1>✅ Banco inicializado! {Category.query.count()} categorias e usuário admin criado.<br>Login: admin / Senha: admin123</h1>"
         else:
-            return f"<h1>✅ Banco já inicializado! {Category.query.count()} categorias encontradas.</h1>"
+            return f"<h1>✅ Banco já inicializado! {Category.query.count()} categorias encontradas.<br>Usuário admin já existe.</h1>"
             
     except Exception as e:
         return f"<h1>❌ Erro: {str(e)}</h1>"
@@ -479,13 +487,16 @@ def login():
         return redirect(url_for('admin_dashboard'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('admin_dashboard'))
-        else:
-            flash('Login falhou. Verifique o utilizador e a senha.', 'danger')
+        try:
+            user = User.query.filter_by(username=form.username.data).first()
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('admin_dashboard'))
+            else:
+                flash('Login falhou. Verifique o utilizador e a senha.', 'danger')
+        except:
+            flash('Erro de conexão. Tente novamente.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
