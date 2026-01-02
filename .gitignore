@@ -37,6 +37,7 @@ criar_tabelas.py
 migracao_definitiva.py
 resgate_completo.py
 restaurar_backup.py
+restaurar_csv.py
 init_db.py
 build.py
 backup_*.csv

@@ -107,14 +107,25 @@ class ProductImage(db.Model):
 # --- PROCESSADOR DE CONTEXTO ---
 @app.context_processor
 def inject_context():
+    # Proteção total contra tabelas inexistentes
+    all_categories = []
+    cart_item_count = 0
+    
     try:
-        all_categories = Category.query.order_by(Category.name).all()
-    except:
-        # Se as tabelas não existem ainda, retorna lista vazia
+        # Verifica se a tabela existe antes de consultar
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        if 'category' in inspector.get_table_names():
+            all_categories = []
+    except Exception as e:
+        print(f"Erro ao buscar categorias: {e}")
         all_categories = []
     
-    cart = session.get('cart', {})
-    cart_item_count = sum(item.get('quantity', 0) for item in cart.values())
+    try:
+        cart = session.get('cart', {})
+        cart_item_count = sum(item.get('quantity', 0) for item in cart.values())
+    except:
+        cart_item_count = 0
     
     def get_image_url(public_id, **options):
         """
