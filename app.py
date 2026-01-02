@@ -120,7 +120,7 @@ def inject_context():
         from sqlalchemy import inspect
         inspector = inspect(db.engine)
         if 'category' in inspector.get_table_names():
-            all_categories = []
+            all_categories = Category.query.order_by(Category.name).all()
     except Exception as e:
         print(f"Erro ao buscar categorias: {e}")
         all_categories = []
