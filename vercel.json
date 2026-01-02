@@ -9,17 +9,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "app.py"
+            "dest": "/app.py"
         }
-    ],
-    "build": {
-        "env": {
-            "PYTHONPATH": "."
-        }
-    },
-    "functions": {
-        "app.py": {
-            "maxDuration": 30
-        }
-    }
+    ]
 }
