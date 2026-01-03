@@ -598,17 +598,10 @@ def edit_product(product_id):
     image_file = cloudinary.utils.cloudinary_url(product.image_file, width=800, height=800, crop="limit")[0]
     return render_template('add_edit_product.html', title='Editar Produto', form=form, product=product, image_file=image_file)
 
-@app.route('/admin/produto/toggle-visibility/<int:product_id>', methods=['POST'])
+# ROTA APAGAR PRODUTO
+@app.route('/admin/produto/apagar/<int:product_id>', methods=['POST'])
 @login_required
-def toggle_product_visibility(product_id):
-    """Alterna a visibilidade de um produto"""
-    product = db.get_or_404(Product, product_id)
-    product.is_visible = not product.is_visible
-    db.session.commit()
-    
-    status = "visível" if product.is_visible else "oculto"
-    flash(f'Produto "{product.name}" agora está {status}.', 'success')
-    return redirect(url_for('admin_dashboard'))
+def delete_product(product_id):
     """Apaga um produto e todas as suas imagens associadas."""
     product = db.get_or_404(Product, product_id)
     
