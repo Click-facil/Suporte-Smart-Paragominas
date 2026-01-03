@@ -254,20 +254,32 @@ def delete_picture(public_id):
 @app.route('/')
 def home():
     try:
-        bestseller_products = Product.query.filter_by(is_featured=True, is_visible=True).order_by(Product.id.desc()).all()
+        bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
+        # Filtra apenas visíveis se a coluna existir
+        bestseller_products = [p for p in bestseller_products if getattr(p, 'is_visible', True)]
     except:
         bestseller_products = []
     return render_template('index.html', products=bestseller_products)
 
 @app.route('/loja')
 def loja():
-    products = Product.query.filter_by(is_visible=True).order_by(Product.id.desc()).all()
+    try:
+        products = Product.query.order_by(Product.id.desc()).all()
+        # Filtra apenas visíveis se a coluna existir
+        products = [p for p in products if getattr(p, 'is_visible', True)]
+    except:
+        products = []
     return render_template('loja.html', products=products, title="Nossa Loja")
 
 @app.route('/categoria/<int:category_id>')
 def category_page(category_id):
     category = db.get_or_404(Category, category_id)
-    products = Product.query.filter_by(category_id=category.id, is_visible=True).all()
+    try:
+        products = Product.query.filter_by(category_id=category.id).all()
+        # Filtra apenas visíveis se a coluna existir
+        products = [p for p in products if getattr(p, 'is_visible', True)]
+    except:
+        products = []
     return render_template('loja.html', products=products, title=f"Categoria: {category.name}", category=category)
 
 @app.route('/produto/<int:product_id>')
