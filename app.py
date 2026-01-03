@@ -101,6 +101,7 @@ class Product(db.Model):
     installment_info = db.Column(db.String(100), nullable=True) # Ex: "12x de R$ 99,90"
     colors = db.Column(db.String(200), nullable=True) # Ex: "Preto,Branco,Azul"
     models = db.Column(db.String(1000), nullable=True) # Ex: "iPhone 13,iPhone 14 Pro"
+    is_visible = db.Column(db.Boolean, default=True, nullable=False)
 
 # NOVA TABELA PARA A GALERIA DE IMAGENS
 class ProductImage(db.Model):
@@ -168,6 +169,7 @@ class ProductForm(FlaskForm):
     installment_info = StringField('Informação de Parcelamento (Ex: 12x de R$ 99,90)')
     colors = StringField('Cores Disponíveis (separadas por vírgula)')
     models = StringField('Modelos Disponíveis (separados por vírgula)')
+    is_visible = BooleanField('Produto Visível no Site?', default=True)
     is_featured = BooleanField('Marcar como Destaque')
     submit = SubmitField('Salvar Produto')
 
@@ -252,20 +254,21 @@ def delete_picture(public_id):
 @app.route('/')
 def home():
     try:
-        bestseller_products = Product.query.filter_by(is_featured=True).order_by(Product.id.desc()).all()
+        bestseller_products = Product.query.filter_by(is_featured=True, is_visible=True).order_by(Product.id.desc()).all()
     except:
         bestseller_products = []
     return render_template('index.html', products=bestseller_products)
 
 @app.route('/loja')
 def loja():
-    products = Product.query.order_by(Product.id.desc()).all()
+    products = Product.query.filter_by(is_visible=True).order_by(Product.id.desc()).all()
     return render_template('loja.html', products=products, title="Nossa Loja")
 
 @app.route('/categoria/<int:category_id>')
 def category_page(category_id):
     category = db.get_or_404(Category, category_id)
-    return render_template('loja.html', products=category.products, title=f"Categoria: {category.name}", category=category)
+    products = Product.query.filter_by(category_id=category.id, is_visible=True).all()
+    return render_template('loja.html', products=products, title=f"Categoria: {category.name}", category=category)
 
 @app.route('/produto/<int:product_id>')
 def product_page(product_id):
@@ -532,6 +535,7 @@ def add_product():
             price=form.price.data,
             promo_price=form.promo_price.data if form.promo_price.data else None,
             is_featured=form.is_featured.data,
+            is_visible=form.is_visible.data,
             category_id=form.category.data,
             installment_info=form.installment_info.data,
             colors=form.colors.data,
@@ -580,6 +584,7 @@ def edit_product(product_id):
         product.price = form.price.data
         product.promo_price = form.promo_price.data if form.promo_price.data else None
         product.is_featured = form.is_featured.data
+        product.is_visible = form.is_visible.data
         product.category_id = form.category.data
         product.installment_info = form.installment_info.data
         product.colors = form.colors.data
